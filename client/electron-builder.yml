@@ -1,0 +1,13 @@
+appId: com.pptarts.desktop
+productName: PPTArts
+directories:
+  output: release
+win:
+  target: nsis
+  icon: null
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+files:
+  - dist
+  - dist-electron
