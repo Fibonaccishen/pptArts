@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+out/
+
+# Electron
+release/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Uploaded files (server-side)
+server/uploads/
+server/thumbnails/
+
+# SQLite database files
+*.db
+*.sqlite
+
+# LibreOffice lock files
+.~lock.*#

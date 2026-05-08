@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:www.runoob.com)",
+      "WebFetch(domain:deepwiki.com)",
+      "Bash(gh repo *)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npx skills *)",
+      "Bash(ls /var/folders/hf/dcnj3lwj0n58xdrr5qnnzvr80000gn/T/skills-* 2>/dev/null | head -5 || echo \"NO_TEMP_DIR\")",
+      "Read(//private/var/folders/hf/dcnj3lwj0n58xdrr5qnnzvr80000gn/T/**)",
+      "Bash(gh auth *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}
