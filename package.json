@@ -1,0 +1,16 @@
+{
+  "name": "pptarts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PPTArts - 企业 PPT 组件库桌面应用",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev:server": "npm -w server run dev",
+    "dev:client": "npm -w client run dev",
+    "build:server": "npm -w server run build",
+    "build:client": "npm -w client run build"
+  }
+}
