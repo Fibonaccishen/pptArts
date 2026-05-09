@@ -49,10 +49,15 @@ export default function ImportPage() {
       const successCount = result.results.filter((r) => r.success).length;
       const failCount = result.results.filter((r) => !r.success).length;
 
+      if (failCount > 0) {
+        const errors = result.results
+          .filter((r) => !r.success)
+          .map((r) => `${r.name}: ${r.error}`)
+          .join('；');
+        message.error(`导入失败：${errors}`);
+      }
       if (successCount > 0) {
         message.success(`成功导入 ${successCount} 个组件${failCount > 0 ? `，${failCount} 个失败` : ''}`);
-      } else {
-        message.error('导入失败，请检查文件格式');
       }
       navigate('/');
     } catch (err: any) {
