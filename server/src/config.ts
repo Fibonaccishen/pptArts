@@ -1,3 +1,8 @@
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
 const { env } = process;
 
 export const config = {
@@ -7,5 +12,5 @@ export const config = {
   uploadDir: env.UPLOAD_DIR || './uploads',
   thumbnailDir: env.THUMBNAIL_DIR || './thumbnails',
   dbPath: env.DB_PATH || './data/pptarts.db',
-  libreofficePath: env.LIBREOFFICE_PATH || 'libreoffice',
+  libreofficePath: env.LIBREOFFICE_PATH || 'soffice',
 };
