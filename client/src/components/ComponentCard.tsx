@@ -28,7 +28,7 @@ export default function ComponentCard({ component, onClick }: Props) {
             <img
               src={`/api/components/${component.id}/thumbnail`}
               alt={component.name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8 }}
               loading="lazy"
             />
           ) : (
