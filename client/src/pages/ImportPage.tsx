@@ -95,9 +95,6 @@ export default function ImportPage() {
           <Select
             options={categoryOptions}
             placeholder="选择一级分类"
-            onChange={() => {
-              form.setFieldValue('subcategory', undefined);
-            }}
           />
         </Form.Item>
         <Form.Item name="subcategory" label="二级分类" rules={[{ required: true, message: '请选择二级分类' }]}>

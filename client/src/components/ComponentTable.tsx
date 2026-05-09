@@ -184,8 +184,7 @@ export default function ComponentTable({
           <Form.Item name="category" label="一级分类" rules={[{ required: true }]}>
             <Select
               options={categoryOptions}
-              onChange={() => editForm.setFieldValue('subcategory', undefined)}
-            />
+/>
           </Form.Item>
           <Form.Item name="subcategory" label="二级分类" rules={[{ required: true }]}>
             <Select options={subcategoryOptions} />
