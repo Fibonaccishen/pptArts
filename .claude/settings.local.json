@@ -12,7 +12,31 @@
       "Bash(gh auth *)",
       "Bash(git init *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(npm install *)",
+      "Bash(npm -v)",
+      "Bash(npm view *)",
+      "Bash(rm -rf node_modules package-lock.json && npm install 2>&1)",
+      "Bash(cp server/.env.example server/.env)",
+      "Bash(npm -w server run dev)",
+      "Bash(kill %1)",
+      "Bash(git rm *)",
+      "Bash(git commit *)",
+      "Bash(ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ npm install)",
+      "Bash(npx vite *)",
+      "Bash(npm -w client run dev)",
+      "Bash(curl -s http://localhost:3001/api/health)",
+      "Bash(curl -s -X POST http://localhost:3001/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"admin\",\"password\":\"admin123\"}')",
+      "Bash(lsof -ti:3001)",
+      "Bash(xargs kill -9)",
+      "Bash(curl -s http://localhost:3001/api/categories -H 'Authorization: Bearer test')",
+      "Bash(kill %1 %2)",
+      "Bash(npx tsc *)"
+    ],
+    "additionalDirectories": [
+      "/Users/shenfangzhi/Desktop/vibe-coding/pptArts",
+      "/Users/shenfangzhi/Desktop/vibe-coding/pptArts/server"
     ]
   }
 }
