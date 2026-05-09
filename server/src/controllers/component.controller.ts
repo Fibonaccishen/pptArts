@@ -80,14 +80,20 @@ export async function importComponents(req: Request, res: Response, next: NextFu
     for (const file of files) {
       const componentName = name || path.basename(file.originalname, '.pptx');
       try {
-        const thumbnailName = await generateThumbnail(file.path);
+        let thumbnailPath = '';
+        try {
+          const thumbnailName = await generateThumbnail(file.path);
+          thumbnailPath = path.join('thumbnails', thumbnailName);
+        } catch (thumbErr: any) {
+          console.warn(`[Import] 缩略图跳过 (${componentName}): ${thumbErr.message}`);
+        }
         items.push({
           name: componentName,
           category,
           subcategory,
           tags: tags || '',
           pptxPath: file.path,
-          thumbnailPath: path.join('thumbnails', thumbnailName),
+          thumbnailPath,
         });
         results.push({ id: 0, name: componentName, success: true });
       } catch (err: any) {
