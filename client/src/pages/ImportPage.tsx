@@ -15,15 +15,12 @@ export default function ImportPage() {
   const [fileList, setFileList] = useState<File[]>([]);
   const [importing, setImporting] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [category, setCategory] = useState<string | undefined>();
-
   const categoryOptions = tree.map((c) => ({ value: c.key, label: c.title }));
 
-  const subcategory = Form.useWatch('subcategory', form);
-  const selectedCategory = form.getFieldValue('category') || category;
+  const watchedCategory = Form.useWatch('category', form);
 
-  const subcategoryOptions = selectedCategory
-    ? tree.find((c) => c.key === selectedCategory)?.children?.map((sc) => ({
+  const subcategoryOptions = watchedCategory
+    ? tree.find((c) => c.key === watchedCategory)?.children?.map((sc) => ({
         value: sc.key.split('|')[1],
         label: sc.title,
       })) || []
@@ -96,14 +93,13 @@ export default function ImportPage() {
           <Select
             options={categoryOptions}
             placeholder="选择一级分类"
-            onChange={(val) => {
-              setCategory(val);
+            onChange={() => {
               form.setFieldValue('subcategory', undefined);
             }}
           />
         </Form.Item>
         <Form.Item name="subcategory" label="二级分类" rules={[{ required: true, message: '请选择二级分类' }]}>
-          <Select options={subcategoryOptions} placeholder="选择二级分类" disabled={!selectedCategory} />
+          <Select options={subcategoryOptions} placeholder="选择二级分类" disabled={!watchedCategory} />
         </Form.Item>
         <Form.Item name="name" label="组件名称（默认取文件名）">
           <Input placeholder="批量应用于所有导入文件" />
