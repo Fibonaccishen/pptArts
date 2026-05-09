@@ -36,7 +36,7 @@ export default function ComponentCard({ component, onClick }: Props) {
           )}
         </div>
       }
-      bodyStyle={{ padding: '8px 12px' }}
+      styles={{ body: { padding: '8px 12px' } }}
     >
       <Text ellipsis style={{ fontSize: 13 }}>{component.name}</Text>
     </Card>

@@ -78,7 +78,8 @@ export async function importComponents(req: Request, res: Response, next: NextFu
     const items: Array<{ name: string; category: string; subcategory: string; tags: string; pptxPath: string; thumbnailPath: string }> = [];
 
     for (const file of files) {
-      const componentName = name || path.basename(file.originalname, '.pptx');
+      const rawName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+      const componentName = name || path.basename(rawName, '.pptx');
       try {
         let thumbnailPath = '';
         try {
