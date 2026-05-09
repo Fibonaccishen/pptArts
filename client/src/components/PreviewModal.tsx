@@ -1,9 +1,9 @@
 import { Modal, Button, Tag, Typography, Space } from 'antd';
-import { LeftOutlined, RightOutlined, DownloadOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { Component } from '../types/component';
 import DownloadButton from './DownloadButton';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 interface Props {
   component: Component | null;
@@ -32,7 +32,7 @@ export default function PreviewModal({
       footer={null}
       width={800}
       centered
-      destroyOnClose
+      destroyOnHidden
       title={component.name}
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

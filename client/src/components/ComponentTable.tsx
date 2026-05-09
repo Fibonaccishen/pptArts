@@ -174,7 +174,7 @@ export default function ComponentTable({
         onOk={saveEdit}
         onCancel={() => setEditModalOpen(false)}
         confirmLoading={saving}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={editForm} layout="vertical">
           <Form.Item name="name" label="组件名称" rules={[{ required: true }]}>
