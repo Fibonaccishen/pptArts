@@ -82,7 +82,7 @@ export default function ComponentTable({
     });
   };
 
-  const editedCategory = editForm.getFieldValue('category');
+  const editedCategory = Form.useWatch('category', editForm);
   const subcategoryOptions = editedCategory
     ? tree.find((c) => c.key === editedCategory)?.children?.map((sc) => ({
         value: sc.key.split('|')[1],
