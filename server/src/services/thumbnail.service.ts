@@ -1,8 +1,78 @@
 import { execFile } from 'child_process';
 import path from 'path';
 import fs from 'fs';
+import sharp from 'sharp';
 import { v4 as uuid } from 'uuid';
 import { config } from '../config.js';
+
+async function trimWhitespace(inputPath: string, outputPath: string): Promise<void> {
+  const image = sharp(inputPath);
+  const { data, info } = await image.raw().toBuffer({ resolveWithObject: true });
+  const { width, height, channels } = info;
+
+  let top = 0, bottom = height - 1, left = 0, right = width - 1;
+
+  const isWhite = (r: number, g: number, b: number, a: number) =>
+    a === 0 || (r > 250 && g > 250 && b > 250);
+
+  topLoop: for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const idx = (y * width + x) * channels;
+      if (!isWhite(data[idx], data[idx + 1], data[idx + 2], channels === 4 ? data[idx + 3] : 255)) {
+        top = y;
+        break topLoop;
+      }
+    }
+  }
+
+  bottomLoop: for (let y = height - 1; y >= top; y--) {
+    for (let x = 0; x < width; x++) {
+      const idx = (y * width + x) * channels;
+      if (!isWhite(data[idx], data[idx + 1], data[idx + 2], channels === 4 ? data[idx + 3] : 255)) {
+        bottom = y;
+        break bottomLoop;
+      }
+    }
+  }
+
+  leftLoop: for (let x = 0; x < width; x++) {
+    for (let y = top; y <= bottom; y++) {
+      const idx = (y * width + x) * channels;
+      if (!isWhite(data[idx], data[idx + 1], data[idx + 2], channels === 4 ? data[idx + 3] : 255)) {
+        left = x;
+        break leftLoop;
+      }
+    }
+  }
+
+  rightLoop: for (let x = width - 1; x >= left; x--) {
+    for (let y = top; y <= bottom; y++) {
+      const idx = (y * width + x) * channels;
+      if (!isWhite(data[idx], data[idx + 1], data[idx + 2], channels === 4 ? data[idx + 3] : 255)) {
+        right = x;
+        break rightLoop;
+      }
+    }
+  }
+
+  const cropWidth = right - left + 1;
+  const cropHeight = bottom - top + 1;
+
+  if (cropWidth <= 0 || cropHeight <= 0) return;
+
+  // Add 5% padding
+  const padX = Math.round(cropWidth * 0.05);
+  const padY = Math.round(cropHeight * 0.05);
+
+  await sharp(inputPath)
+    .extract({
+      left: Math.max(0, left - padX),
+      top: Math.max(0, top - padY),
+      width: Math.min(width - left + padX, cropWidth + padX * 2),
+      height: Math.min(height - top + padY, cropHeight + padY * 2),
+    })
+    .toFile(outputPath);
+}
 
 function runLibreOffice(pptxPath: string, outputDir: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -14,7 +84,7 @@ function runLibreOffice(pptxPath: string, outputDir: string): Promise<string> {
 
     console.log(`[Thumbnail] 执行: ${cmd} ${args.join(' ')}`);
 
-    execFile(cmd, args, { timeout: 30000 }, (err) => {
+    execFile(cmd, args, { timeout: 30000 }, async (err) => {
       if (err) {
         console.error(`[Thumbnail] 失败: ${err.message}`);
         reject(new Error(`缩略图生成失败: ${err.message}`));
@@ -26,15 +96,26 @@ function runLibreOffice(pptxPath: string, outputDir: string): Promise<string> {
 
       console.log(`[Thumbnail] 查找生成文件: ${generatedFile}`);
 
-      if (fs.existsSync(generatedFile)) {
+      if (!fs.existsSync(generatedFile)) {
+        console.error(`[Thumbnail] 文件未生成: ${generatedFile}`);
+        reject(new Error('LibreOffice 未生成缩略图文件'));
+        return;
+      }
+
+      try {
+        const newName = `${uuid()}.png`;
+        const newPath = path.join(absOutputDir, newName);
+        await trimWhitespace(generatedFile, newPath);
+        fs.unlinkSync(generatedFile); // delete original
+        console.log(`[Thumbnail] 裁剪完成: ${newName}`);
+        resolve(newName);
+      } catch (trimErr: any) {
+        // If trim fails, fall back to the original
+        console.warn(`[Thumbnail] 裁剪失败，使用原图: ${trimErr.message}`);
         const newName = `${uuid()}.png`;
         const newPath = path.join(absOutputDir, newName);
         fs.renameSync(generatedFile, newPath);
-        console.log(`[Thumbnail] 成功: ${newName}`);
         resolve(newName);
-      } else {
-        console.error(`[Thumbnail] 文件未生成: ${generatedFile}`);
-        reject(new Error('LibreOffice 未生成缩略图文件'));
       }
     });
   });
