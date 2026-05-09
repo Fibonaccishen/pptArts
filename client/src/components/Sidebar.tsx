@@ -8,6 +8,7 @@ import type { CategoryNode } from '../types/category';
 
 export default function Sidebar() {
   const { tree, selectedKey, isLoading, fetchTree, selectCategory } = useCategoryStore();
+  const safeTree = JSON.parse(JSON.stringify(tree)) as typeof tree;
   const fetchList = useComponentStore((s) => s.fetchList);
   const navigate = useNavigate();
 
@@ -36,7 +37,7 @@ export default function Sidebar() {
     navigate('/');
   };
 
-  const treeData = tree.map((cat): any => ({
+  const treeData = safeTree.map((cat): any => ({
     key: cat.key,
     title: cat.title,
     children: cat.children?.map((child: CategoryNode) => ({

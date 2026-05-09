@@ -15,16 +15,18 @@ export default function ImportPage() {
   const [fileList, setFileList] = useState<File[]>([]);
   const [importing, setImporting] = useState(false);
   const [progress, setProgress] = useState(0);
-  const categoryOptions = tree.map((c) => ({ value: c.key, label: c.title }));
-
   const watchedCategory = Form.useWatch('category', form);
 
-  const subcategoryOptions = watchedCategory
-    ? tree.find((c) => c.key === watchedCategory)?.children?.map((sc) => ({
-        value: sc.key.split('|')[1],
-        label: sc.title,
-      })) || []
-    : [];
+  // Clone tree data to break Zustand frozen-object references that cause
+  // "circular references" warning in Ant Design Select
+  const safeTree = JSON.parse(JSON.stringify(tree)) as typeof tree;
+
+  const categoryOptions = safeTree.map((c) => ({ value: c.key, label: c.title }));
+  const selectedNode = safeTree.find((c) => c.key === watchedCategory);
+  const subcategoryOptions = selectedNode?.children?.map((sc) => ({
+    value: sc.key.split('|')[1],
+    label: sc.title,
+  })) || [];
 
   const handleImport = async () => {
     if (fileList.length === 0) {

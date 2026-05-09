@@ -25,7 +25,8 @@ export default function ComponentTable({
   const [saving, setSaving] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const categoryOptions = tree.map((c) => ({ value: c.key, label: c.title }));
+  const safeTree = JSON.parse(JSON.stringify(tree)) as typeof tree;
+  const categoryOptions = safeTree.map((c) => ({ value: c.key, label: c.title }));
 
   const openEdit = (comp: Component) => {
     setEditingComp(comp);
@@ -84,7 +85,7 @@ export default function ComponentTable({
 
   const editedCategory = Form.useWatch('category', editForm);
   const subcategoryOptions = editedCategory
-    ? tree.find((c) => c.key === editedCategory)?.children?.map((sc) => ({
+    ? safeTree.find((c) => c.key === editedCategory)?.children?.map((sc) => ({
         value: sc.key.split('|')[1],
         label: sc.title,
       })) || []
