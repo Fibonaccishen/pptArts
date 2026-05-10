@@ -101,7 +101,7 @@ export default function ComponentTable({
           <img
             src={`/api/components/${record.id}/thumbnail`}
             alt=""
-            style={{ width: 60, height: 45, objectFit: 'cover', borderRadius: 4 }}
+            style={{ width: 60, height: 45, objectFit: 'contain', borderRadius: 4, padding: 2, background: '#FAFAF8' }}
           />
         ) : (
           <span style={{ color: '#ccc' }}>无</span>

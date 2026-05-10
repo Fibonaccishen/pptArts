@@ -70,7 +70,7 @@ export default function ImportPage() {
   };
 
   return (
-    <div style={{ maxWidth: 700 }}>
+    <div style={{ maxWidth: 700, margin: '0 auto' }}>
       <Title level={4} style={{ marginBottom: 24 }}>导入组件</Title>
 
       <Dragger
