@@ -70,14 +70,25 @@ async function trimWhitespace(inputPath: string, outputPath: string): Promise<vo
 
   if (extractWidth <= 0 || extractHeight <= 0) return;
 
-  await sharp(inputPath)
-    .extract({
-      left: extractLeft,
-      top: extractTop,
-      width: extractWidth,
-      height: extractHeight,
-    })
-    .toFile(outputPath);
+  let pipeline = sharp(inputPath).extract({
+    left: extractLeft,
+    top: extractTop,
+    width: extractWidth,
+    height: extractHeight,
+  });
+
+  // If the cropped area is very small, upscale to a visible minimum
+  const MIN_WIDTH = 240;
+  const MIN_HEIGHT = 180;
+  if (extractWidth < MIN_WIDTH || extractHeight < MIN_HEIGHT) {
+    pipeline = pipeline.resize(MIN_WIDTH, MIN_HEIGHT, {
+      fit: 'inside',
+      withoutEnlargement: false,
+      background: { r: 255, g: 255, b: 255, alpha: 1 },
+    });
+  }
+
+  await pipeline.toFile(outputPath);
 }
 
 function runLibreOffice(pptxPath: string, outputDir: string): Promise<string> {
