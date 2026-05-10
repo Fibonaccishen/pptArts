@@ -4,28 +4,35 @@ import { DownloadOutlined } from '@ant-design/icons';
 import type { Component } from '../types/component';
 import * as componentsApi from '../api/components';
 
+const MIME_TYPES: Record<string, string> = {
+  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  png: 'image/png',
+  svg: 'image/svg+xml',
+};
+
 interface Props {
   component: Component;
 }
 
 export default function DownloadButton({ component }: Props) {
   const [loading, setLoading] = useState(false);
+  const fileType = component.file_type || 'pptx';
+  const fileTypeLabel = fileType.toUpperCase();
 
   const handleDownload = async () => {
     setLoading(true);
     try {
       const buffer = await componentsApi.downloadPptx(component.id);
-      const filename = `${component.name}.pptx`;
+      const filename = `${component.name}.${fileType}`;
 
       if (window.electronAPI?.saveFile) {
-        const savedPath = await window.electronAPI.saveFile(buffer, filename);
+        const savedPath = await window.electronAPI.saveFile(buffer, filename, fileType);
         if (savedPath) {
           message.success('下载成功');
         }
       } else {
-        const blob = new Blob([buffer], {
-          type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        });
+        const mime = MIME_TYPES[fileType] || 'application/octet-stream';
+        const blob = new Blob([buffer], { type: mime });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -48,7 +55,7 @@ export default function DownloadButton({ component }: Props) {
       onClick={handleDownload}
       loading={loading}
     >
-      下载 PPTX
+      下载 {fileTypeLabel}
     </Button>
   );
 }
