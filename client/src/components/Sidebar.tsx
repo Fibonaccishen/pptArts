@@ -87,7 +87,7 @@ export default function Sidebar() {
             fontSize: 13,
             color: isSelected(child.key) ? '#4A7C59' : '#444',
             fontWeight: isSelected(child.key) ? 500 : 400,
-            background: isSelected(child.key) ? 'rgba(74,124,89,0.08)' : 'transparent',
+            background: isSelected(child.key) ? 'rgba(74,124,89,0.06)' : 'transparent',
             transition: 'all 0.15s ease',
             cursor: 'pointer',
           }}
