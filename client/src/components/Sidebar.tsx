@@ -42,14 +42,13 @@ export default function Sidebar() {
   const onSelect = (keys: React.Key[]) => {
     if (keys.length === 0) return;
     const key = keys[0] as string;
-    selectCategory(key);
 
+    // Only navigate on leaf (second-level) clicks; first-level clicks
+    // are handled by the Tree's native expand/collapse behavior.
     const parts = key.split('|');
     if (parts.length === 2) {
+      selectCategory(key);
       fetchList({ category: parts[0], subcategory: parts[1], page: 1 });
-      navigate('/');
-    } else {
-      fetchList({ category: parts[0], page: 1 });
       navigate('/');
     }
   };
