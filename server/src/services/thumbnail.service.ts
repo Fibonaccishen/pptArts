@@ -10,15 +10,34 @@ async function trimWhitespace(inputPath: string, outputPath: string): Promise<vo
   const { data, info } = await image.raw().toBuffer({ resolveWithObject: true });
   const { width, height, channels } = info;
 
-  let top = 0, bottom = height - 1, left = 0, right = width - 1;
+  // Auto-detect background color from the four corners of the image.
+  // This handles non-white backgrounds (e.g. off-white slide canvases).
+  const sample = (x: number, y: number) => {
+    const idx = (y * width + x) * channels;
+    return {
+      r: data[idx], g: data[idx + 1], b: data[idx + 2],
+      a: channels === 4 ? data[idx + 3] : 255,
+    };
+  };
 
-  const isWhite = (r: number, g: number, b: number, a: number) =>
-    a === 0 || (r > 250 && g > 250 && b > 250);
+  const corners = [sample(0, 0), sample(width - 1, 0), sample(0, height - 1), sample(width - 1, height - 1)];
+  const bg = {
+    r: Math.round(corners.reduce((s, c) => s + c.r, 0) / 4),
+    g: Math.round(corners.reduce((s, c) => s + c.g, 0) / 4),
+    b: Math.round(corners.reduce((s, c) => s + c.b, 0) / 4),
+  };
+
+  // Pixels within 25 of background color, or with alpha=0, are treated as background
+  const TOLERANCE = 25;
+  const isBackground = (r: number, g: number, b: number, a: number) =>
+    a === 0 || (Math.abs(r - bg.r) <= TOLERANCE && Math.abs(g - bg.g) <= TOLERANCE && Math.abs(b - bg.b) <= TOLERANCE);
+
+  let top = 0, bottom = height - 1, left = 0, right = width - 1;
 
   topLoop: for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const idx = (y * width + x) * channels;
-      if (!isWhite(data[idx], data[idx + 1], data[idx + 2], channels === 4 ? data[idx + 3] : 255)) {
+      if (!isBackground(data[idx], data[idx + 1], data[idx + 2], channels === 4 ? data[idx + 3] : 255)) {
         top = y;
         break topLoop;
       }
@@ -28,7 +47,7 @@ async function trimWhitespace(inputPath: string, outputPath: string): Promise<vo
   bottomLoop: for (let y = height - 1; y >= top; y--) {
     for (let x = 0; x < width; x++) {
       const idx = (y * width + x) * channels;
-      if (!isWhite(data[idx], data[idx + 1], data[idx + 2], channels === 4 ? data[idx + 3] : 255)) {
+      if (!isBackground(data[idx], data[idx + 1], data[idx + 2], channels === 4 ? data[idx + 3] : 255)) {
         bottom = y;
         break bottomLoop;
       }
@@ -38,7 +57,7 @@ async function trimWhitespace(inputPath: string, outputPath: string): Promise<vo
   leftLoop: for (let x = 0; x < width; x++) {
     for (let y = top; y <= bottom; y++) {
       const idx = (y * width + x) * channels;
-      if (!isWhite(data[idx], data[idx + 1], data[idx + 2], channels === 4 ? data[idx + 3] : 255)) {
+      if (!isBackground(data[idx], data[idx + 1], data[idx + 2], channels === 4 ? data[idx + 3] : 255)) {
         left = x;
         break leftLoop;
       }
@@ -48,7 +67,7 @@ async function trimWhitespace(inputPath: string, outputPath: string): Promise<vo
   rightLoop: for (let x = width - 1; x >= left; x--) {
     for (let y = top; y <= bottom; y++) {
       const idx = (y * width + x) * channels;
-      if (!isWhite(data[idx], data[idx + 1], data[idx + 2], channels === 4 ? data[idx + 3] : 255)) {
+      if (!isBackground(data[idx], data[idx + 1], data[idx + 2], channels === 4 ? data[idx + 3] : 255)) {
         right = x;
         break rightLoop;
       }
