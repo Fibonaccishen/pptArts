@@ -6,11 +6,12 @@ import fs from 'fs';
 
 export function list(req: Request, res: Response, next: NextFunction) {
   try {
-    const { category, subcategory, search, page, pageSize } = req.query;
+    const { category, subcategory, search, sort, page, pageSize } = req.query;
     const result = componentService.list({
       category: category as string,
       subcategory: subcategory as string,
       search: search as string,
+      sort: (sort === 'download_count' ? 'download_count' : 'name') as 'name' | 'download_count',
       page: page ? parseInt(page as string, 10) : undefined,
       pageSize: pageSize ? parseInt(pageSize as string, 10) : undefined,
     });
@@ -31,12 +32,14 @@ export function getById(req: Request, res: Response, next: NextFunction) {
 
 export function download(req: Request, res: Response, next: NextFunction) {
   try {
-    const { pptxPath, name, file_type } = componentService.getByIdForDownload(parseInt(req.params.id, 10));
+    const id = parseInt(req.params.id, 10);
+    const { pptxPath, name, file_type } = componentService.getByIdForDownload(id);
     const absPath = path.resolve(pptxPath);
     if (!fs.existsSync(absPath)) {
       res.status(404).json({ error: { code: 'NOT_FOUND', message: '文件不存在' } });
       return;
     }
+    componentService.incrementDownloadCount(id);
     const mimeTypes: Record<string, string> = {
       pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
       png: 'image/png',

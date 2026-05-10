@@ -20,6 +20,7 @@ export function initializeDatabase(): void {
       pptx_path TEXT NOT NULL,
       thumbnail_path TEXT NOT NULL,
       file_type TEXT NOT NULL DEFAULT 'pptx',
+      download_count INTEGER NOT NULL DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -28,7 +29,14 @@ export function initializeDatabase(): void {
       ON components(category, subcategory);
     CREATE INDEX IF NOT EXISTS idx_components_name
       ON components(name);
+    CREATE INDEX IF NOT EXISTS idx_components_download
+      ON components(download_count DESC);
   `);
+
+  // Migration: add download_count for existing databases
+  try {
+    db.exec(`ALTER TABLE components ADD COLUMN download_count INTEGER NOT NULL DEFAULT 0`);
+  } catch { /* column already exists */ }
 
   console.log('[DB] 数据库表初始化完成');
 }

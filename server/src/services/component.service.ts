@@ -29,11 +29,12 @@ export function list(params: ComponentListParams): PaginatedResponse<Component> 
   const pageSize = Math.min(100, Math.max(1, params.pageSize || 20));
   const offset = (page - 1) * pageSize;
 
+  const orderCol = params.sort === 'download_count' ? 'download_count DESC' : 'name COLLATE NOCASE ASC';
   const countRow = db.prepare(`SELECT COUNT(*) as total FROM components ${where}`).get(...values) as { total: number };
   const total = countRow.total;
 
   const data = db.prepare(
-    `SELECT * FROM components ${where} ORDER BY updated_at DESC LIMIT ? OFFSET ?`,
+    `SELECT * FROM components ${where} ORDER BY ${orderCol} LIMIT ? OFFSET ?`,
   ).all(...values, pageSize, offset) as Component[];
 
   return { data, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
@@ -49,6 +50,11 @@ export function getById(id: number): Component {
 export function getByIdForDownload(id: number): { pptxPath: string; name: string; file_type: string } {
   const comp = getById(id);
   return { pptxPath: comp.pptx_path, name: comp.name, file_type: comp.file_type };
+}
+
+export function incrementDownloadCount(id: number): void {
+  const db = getDb();
+  db.prepare('UPDATE components SET download_count = download_count + 1 WHERE id = ?').run(id);
 }
 
 export function importMany(items: ImportComponentDto[]): Component[] {
