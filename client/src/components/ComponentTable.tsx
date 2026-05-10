@@ -161,6 +161,7 @@ export default function ComponentTable({
         columns={columns}
         dataSource={items}
         loading={loading}
+        scroll={{ x: 780 }}
         rowSelection={{
           selectedRowKeys,
           onChange: (keys) => setSelectedRowKeys(keys),
