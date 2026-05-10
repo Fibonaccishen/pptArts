@@ -72,7 +72,9 @@ export default function AppLayout() {
           alignItems: 'center',
           justifyContent: 'center',
           gap: 10,
+          padding: '0 24px',
           borderBottom: '1px solid #EBEAE6',
+          lineHeight: '64px',
         }}>
           <div style={{
             width: 32, height: 32, borderRadius: 8,
