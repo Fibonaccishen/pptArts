@@ -6,13 +6,17 @@ PPTX 拆分工具：将 PPTX 中每个独立形状拆分为单独的 PPTX 文件
     python split_pptx.py <source.pptx> [output_dir] [选项]
 
 选项:
-    --slides 1,3,5      只处理指定页码（逗号分隔，从 1 开始）
+    --list               仅列出所有形状信息（不导出），用于排查
+    --slides 1,3,5       只处理指定页码（逗号分隔，从 1 开始）
+    --no-frame           跳过无填充的形状（如边框、方框）
     --min-width 100      跳过宽度小于 N（px）的形状
     --min-height 100     跳过高度小于 N（px）的形状
     --skip-text          跳过纯文本框形状
 
 示例:
-    python split_pptx.py resource.pptx out/ --slides 2,4 --min-width 80
+    python split_pptx.py res.pptx              # 导出所有形状
+    python split_pptx.py res.pptx --list       # 先看看有哪些形状
+    python split_pptx.py res.pptx out/ --no-frame  # 跳过方框
 """
 
 import sys
@@ -21,6 +25,29 @@ from copy import deepcopy
 from pptx import Presentation
 from pptx.util import Emu
 from pptx.enum.shapes import MSO_SHAPE_TYPE
+
+SHAPE_TYPE_NAMES = {
+    MSO_SHAPE_TYPE.AUTO_SHAPE: 'auto_shape',
+    MSO_SHAPE_TYPE.GROUP: 'group',
+    MSO_SHAPE_TYPE.PICTURE: 'picture',
+    MSO_SHAPE_TYPE.FREEFORM: 'freeform',
+    MSO_SHAPE_TYPE.TEXT_BOX: 'text_box',
+    MSO_SHAPE_TYPE.PLACEHOLDER: 'placeholder',
+}
+
+def describe_shape(shape):
+    stype = SHAPE_TYPE_NAMES.get(shape.shape_type, f'other({shape.shape_type})')
+    w = emu_to_px(shape.width)
+    h = emu_to_px(shape.height)
+    name = shape.name
+    has_fill = True
+    try:
+        fill = shape.fill
+        has_fill = fill.type is not None
+    except Exception:
+        pass
+    text = shape.text[:30] if shape.has_text_frame and shape.text else ''
+    return f"  [{stype}] {name} ({w}x{h}px) fill={'Y' if has_fill else 'N'} text={repr(text)}"
 
 def emu_to_px(emu):
     return round(emu / 12700)
@@ -43,11 +70,32 @@ def is_text_only_shape(shape):
             pass
     return False
 
-def split_pptx(source_path, output_dir, slides=None, min_width=0, min_height=0, skip_text=False):
+def list_shapes(source_path, slides=None):
+    """Print all shapes without exporting."""
     prs = Presentation(source_path)
+    target = list(range(len(prs.slides))) if slides is None else [s - 1 for s in slides]
+    for sidx in target:
+        slide = prs.slides[sidx]
+        print(f"\n第 {sidx+1} 页 ({len(slide.shapes)} 个形状):")
+        for i, s in enumerate(slide.shapes):
+            print(f"  [{i+1}] {describe_shape(s)}")
+
+def shape_has_no_fill(shape):
+    try:
+        return shape.fill.type is None
+    except Exception:
+        return False
+
+def split_pptx(source_path, output_dir, slides=None, min_width=0, min_height=0,
+               skip_text=False, list_only=False, no_frame=False):
+    prs = Presentation(source_path)
+
+    if list_only:
+        list_shapes(source_path, slides)
+        return
+
     slide_width = prs.slide_width
     slide_height = prs.slide_height
-
     os.makedirs(output_dir, exist_ok=True)
 
     total_slides = len(prs.slides)
@@ -78,6 +126,9 @@ def split_pptx(source_path, output_dir, slides=None, min_width=0, min_height=0, 
             if skip_text and is_text_only_shape(shape):
                 skipped += 1
                 continue
+            if no_frame and shape_has_no_fill(shape):
+                skipped += 1
+                continue
 
             try:
                 new_prs = Presentation()
@@ -106,8 +157,9 @@ def split_pptx(source_path, output_dir, slides=None, min_width=0, min_height=0, 
     print(f"\n总计: 导出 {total} 个 | 跳过 {skipped} 个 → {output_dir}/")
 
 def parse_args():
-    args = {'slides': None, 'min_width': 0, 'min_height': 0, 'skip_text': False}
-    i = 3
+    args = {'slides': None, 'min_width': 0, 'min_height': 0, 'skip_text': False,
+            'no_frame': False, 'list_only': False}
+    i = 2
     while i < len(sys.argv):
         a = sys.argv[i]
         if a == '--slides' and i + 1 < len(sys.argv):
@@ -121,6 +173,12 @@ def parse_args():
             i += 2
         elif a == '--skip-text':
             args['skip_text'] = True
+            i += 1
+        elif a == '--no-frame':
+            args['no_frame'] = True
+            i += 1
+        elif a == '--list':
+            args['list_only'] = True
             i += 1
         else:
             i += 1
