@@ -110,15 +110,16 @@ html, body, #root {
 
 .sidebar-tree .ant-tree-switcher {
   display: inline-flex !important;
-  align-items: center;
+  align-items: center !important;
   justify-content: center;
-  width: 18px !important;
-  height: 18px !important;
-  line-height: 1 !important;
-  margin-right: 2px;
+  width: 22px !important;
+  height: 24px !important;
+  line-height: 24px !important;
+  margin-right: 0;
   border-radius: 5px;
   color: #B5B5B5 !important;
   transition: background 0.15s ease;
+  vertical-align: middle;
 }
 
 .sidebar-tree .ant-tree-switcher:hover {

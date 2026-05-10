@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Typography } from 'antd';
+import { FolderOutlined, AppstoreOutlined } from '@ant-design/icons';
 import { useComponentStore } from '../stores/useComponentStore';
 import { useCategoryStore } from '../stores/useCategoryStore';
 import ComponentGrid from '../components/ComponentGrid';
@@ -7,7 +8,7 @@ import Pagination from '../components/Pagination';
 import PreviewModal from '../components/PreviewModal';
 import type { Component } from '../types/component';
 
-const { Title } = Typography;
+const { Text } = Typography;
 
 export default function BrowsePage() {
   const { items, total, page, pageSize, isLoading, fetchList } = useComponentStore();
@@ -20,16 +21,19 @@ export default function BrowsePage() {
     fetchList({ page, pageSize });
   }, [page, pageSize]);
 
-  const getCategoryTitle = () => {
-    if (!selectedKey) return '全部组件';
-    const parts = selectedKey.split('|');
-    if (parts.length === 2) {
-      const parent = tree.find((c) => c.key === parts[0]);
+  const categoryInfo = useMemo(() => {
+    if (!selectedKey) return { icon: <AppstoreOutlined />, parts: ['全部组件'] };
+    const keyParts = selectedKey.split('|');
+    if (keyParts.length === 2) {
+      const parent = tree.find((c) => c.key === keyParts[0]);
       const child = parent?.children?.find((c) => c.key === selectedKey);
-      return child ? `${parent!.title} > ${child.title}` : '全部组件';
+      if (parent && child) {
+        return { icon: <FolderOutlined />, parts: [parent.title, child.title] };
+      }
     }
-    return tree.find((c) => c.key === selectedKey)?.title || '全部组件';
-  };
+    const cat = tree.find((c) => c.key === selectedKey);
+    return cat ? { icon: <FolderOutlined />, parts: [cat.title] } : { icon: <AppstoreOutlined />, parts: ['全部组件'] };
+  }, [selectedKey, tree]);
 
   const openPreview = (comp: Component, index: number) => {
     setPreviewIndex(index);
@@ -50,7 +54,39 @@ export default function BrowsePage() {
 
   return (
     <div>
-      <Title level={4} style={{ marginBottom: 24 }}>{getCategoryTitle()}</Title>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        marginBottom: 24,
+      }}>
+        <div style={{
+          width: 36, height: 36, borderRadius: 10,
+          background: 'linear-gradient(135deg, #E8EDE6 0%, #F0F2EF 100%)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#4A7C59',
+          fontSize: 16,
+        }}>
+          {categoryInfo.icon}
+        </div>
+        <div>
+          {categoryInfo.parts.length > 1 ? (
+            <span style={{ fontSize: 15, fontWeight: 500, color: '#2C2C2C' }}>
+              {categoryInfo.parts[0]}
+              <span style={{ color: '#C5C5C5', margin: '0 6px', fontWeight: 400 }}>&rsaquo;</span>
+              {categoryInfo.parts[1]}
+            </span>
+          ) : (
+            <span style={{ fontSize: 15, fontWeight: 500, color: '#2C2C2C' }}>
+              {categoryInfo.parts[0]}
+            </span>
+          )}
+          <Text type="secondary" style={{ display: 'block', fontSize: 12, marginTop: 1 }}>
+            {total} 个组件
+          </Text>
+        </div>
+      </div>
+
       <ComponentGrid
         items={items}
         loading={isLoading}
