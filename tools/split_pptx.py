@@ -1,181 +1,217 @@
 #!/usr/bin/env python3
 """
-PPTX 拆分工具：将 PPTX 中每个独立形状拆分为单独的 PPTX 文件。
+PPTX 拆分工具：将每页中每个独立形状拆分为单独的 PPTX 文件。
+
+通过直接操作 PPTX 内部的 XML（不在 python-pptx 层面删除形状），
+避免 LibreOffice 渲染空白的问题。
 
 用法:
     python split_pptx.py <source.pptx> [output_dir] [选项]
 
 选项:
-    --list               仅列出所有形状信息（不导出），用于排查
-    --slides 1,3,5       只处理指定页码（逗号分隔，从 1 开始）
-    --no-frame           跳过无填充的形状（如边框、方框）
-    --min-width 100      跳过宽度小于 N（px）的形状
-    --min-height 100     跳过高度小于 N（px）的形状
-    --skip-text          跳过纯文本框形状
+    --list               仅列出所有形状信息（不导出）
     --skip-name "圆角矩形"  跳过名称以指定文字开头的形状
-
-示例:
-    python split_pptx.py res.pptx              # 导出所有形状
-    python split_pptx.py res.pptx --list       # 先看看有哪些形状
-    python split_pptx.py res.pptx out/ --no-frame  # 跳过方框
 """
 
 import sys
 import os
+import zipfile
+import shutil
+from io import BytesIO
 from copy import deepcopy
-from pptx import Presentation
-from pptx.util import Emu
-from pptx.enum.shapes import MSO_SHAPE_TYPE
+from lxml import etree
 
-SHAPE_TYPE_NAMES = {
-    MSO_SHAPE_TYPE.AUTO_SHAPE: 'auto_shape',
-    MSO_SHAPE_TYPE.GROUP: 'group',
-    MSO_SHAPE_TYPE.PICTURE: 'picture',
-    MSO_SHAPE_TYPE.FREEFORM: 'freeform',
-    MSO_SHAPE_TYPE.TEXT_BOX: 'text_box',
-    MSO_SHAPE_TYPE.PLACEHOLDER: 'placeholder',
+# --- helpers ---
+NSMAP = {
+    'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
+    'r': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
+    'p': 'http://schemas.openxmlformats.org/presentationml/2006/main',
 }
 
-def describe_shape(shape):
-    stype = SHAPE_TYPE_NAMES.get(shape.shape_type, f'other({shape.shape_type})')
-    w = emu_to_px(shape.width)
-    h = emu_to_px(shape.height)
-    name = shape.name
-    has_fill = True
-    try:
-        fill = shape.fill
-        has_fill = fill.type is not None
-    except Exception:
-        pass
-    text = shape.text[:30] if shape.has_text_frame and shape.text else ''
-    return f"  [{stype}] {name} ({w}x{h}px) fill={'Y' if has_fill else 'N'} text={repr(text)}"
+def qn(tag):
+    """Resolve a prefix:name to a Clark notation qualified name."""
+    if ':' in tag:
+        ns, name = tag.split(':', 1)
+        return '{%s}%s' % (NSMAP[ns], name)
+    return tag
 
 def emu_to_px(emu):
     return round(emu / 12700)
 
-def is_text_only_shape(shape):
-    """Check if shape is just a text box with no visual content."""
-    if shape.has_text_frame:
-        # Has text but check if it's a placeholder or has fill/line
-        if not shape.has_text_frame:
-            return False
-        # If it's just a plain text box with text and no fill/line
-        try:
-            fill = shape.fill
-            line = shape.line
-            has_fill = fill.type is not None  # type is None = no fill
-            has_line = line.fill.type is not None if line else False
-            if not has_fill and not has_line:
-                return True
-        except Exception:
-            pass
-    return False
+def px_to_emu(px):
+    return int(px * 12700)
 
-def list_shapes(source_path, slides=None):
-    """Print all shapes without exporting."""
-    prs = Presentation(source_path)
-    target = list(range(len(prs.slides))) if slides is None else [s - 1 for s in slides]
-    for sidx in target:
-        slide = prs.slides[sidx]
-        print(f"\n第 {sidx+1} 页 ({len(slide.shapes)} 个形状):")
-        for i, s in enumerate(slide.shapes):
-            print(f"  [{i+1}] {describe_shape(s)}")
+def _find(el, path):
+    """Safe find with namespace prefix resolution."""
+    parts = path.split('/')
+    result = el
+    for part in parts:
+        result = result.find(qn(part))
+        if result is None:
+            return None
+    return result
 
-def shape_has_no_fill(shape):
-    try:
-        return shape.fill.type is None
-    except Exception:
-        return False
+def _get(el, attr, default=''):
+    v = el.get(attr)
+    return int(v) if v is not None else default
 
-def split_pptx(source_path, output_dir, slides=None, min_width=0, min_height=0,
-               skip_text=False, list_only=False, no_frame=False, skip_name=None):
-    prs = Presentation(source_path)
+def describe_shape(sp_elm):
+    """Return a human-readable shape description from its XML element."""
+    name_el = _find(sp_elm, 'p:nvSpPr/p:cNvPr')
+    name = name_el.get('name', '') if name_el is not None else ''
+    xfrm = _find(sp_elm, 'p:spPr/a:xfrm')
+    off = _find(xfrm, 'a:off') if xfrm is not None else None
+    ext = _find(xfrm, 'a:ext') if xfrm is not None else None
+    x = _get(off, 'x', 0) if off is not None else 0
+    y = _get(off, 'y', 0) if off is not None else 0
+    w = _get(ext, 'cx', 0) if ext is not None else 0
+    h = _get(ext, 'cy', 0) if ext is not None else 0
+    tag = etree.QName(sp_elm).localname
+    return tag, name, emu_to_px(x), emu_to_px(y), emu_to_px(w), emu_to_px(h)
 
-    if list_only:
-        list_shapes(source_path, slides)
-        return
+def list_shapes(source_path):
+    """Print all shapes in the PPTX."""
+    with zipfile.ZipFile(source_path) as zf:
+        slides = sorted([f for f in zf.namelist() if f.startswith('ppt/slides/slide') and f.endswith('.xml')])
+        for si, slide_path in enumerate(slides):
+            tree = etree.parse(zf.open(slide_path))
+            shapes = tree.findall('.//' + qn('p:sp'))
+            print(f"\n第 {si+1} 页 ({len(shapes)} 个形状):")
+            for i, sp in enumerate(shapes):
+                tag, name, x, y, w, h = describe_shape(sp)
+                print(f"  [{i+1}] [{tag}] {name} ({w}x{h}px) at ({x},{y})")
 
-    slide_width = prs.slide_width
-    slide_height = prs.slide_height
+def split_pptx(source_path, output_dir, skip_name=None):
+    """Split each shape into its own PPTX file."""
     os.makedirs(output_dir, exist_ok=True)
 
-    total_slides = len(prs.slides)
-    target_slides = list(range(total_slides)) if slides is None else [s - 1 for s in slides]
-
-    print(f"源文件: {source_path}")
-    print(f"共 {total_slides} 页，处理第 {[s+1 for s in target_slides]} 页")
+    with zipfile.ZipFile(source_path, 'r') as zf:
+        # Read all entries once
+        entries = {name: zf.read(name) for name in zf.namelist()}
+        slide_paths = sorted([f for f in entries if f.startswith('ppt/slides/slide') and f.endswith('.xml')])
+        slide_rels = {f: f.replace('slides/slide', 'slides/_rels/slide') + '.rels'
+                      for f in slide_paths}
 
     total = 0
-    skipped = 0
+    for si, slide_path in enumerate(slide_paths):
+        slide_xml = entries[slide_path]
+        tree = etree.fromstring(slide_xml)
+        shapes = tree.findall('.//' + qn('p:sp'))
+        print(f"\n第 {si+1} 页: {len(shapes)} 个形状")
 
-    for slide_idx in target_slides:
-        slide = prs.slides[slide_idx]
-        shapes = list(slide.shapes)
-        print(f"\n第 {slide_idx+1} 页: {len(shapes)} 个形状")
-
-        for shape_idx, shape in enumerate(shapes):
-            # Apply filters
-            w_px = emu_to_px(shape.width)
-            h_px = emu_to_px(shape.height)
-
-            if min_width and w_px < min_width:
-                skipped += 1
-                continue
-            if min_height and h_px < min_height:
-                skipped += 1
-                continue
-            if skip_text and is_text_only_shape(shape):
-                skipped += 1
-                continue
-            if no_frame and shape_has_no_fill(shape):
-                skipped += 1
-                continue
-            if skip_name and shape.name.startswith(skip_name):
-                skipped += 1
+        for shape_idx, sp_elm in enumerate(shapes):
+            tag, name, x, y, w, h = describe_shape(sp_elm)
+            if skip_name and name.startswith(skip_name):
                 continue
 
             try:
-                # Save-and-reload the original to get a true clone that preserves
-                # all theme/color/style references. deepcopy() loses these.
-                PAD = 80 * 12700
-                # LibreOffice can't render shapes on slides smaller than ~500px.
-                # Keep slide at a minimum size; the server-side sharp.trim() will
-                # crop away the whitespace.
-                MIN_SLIDE = 640 * 12700
+                # Copy the shape XML element
+                sp_copy = deepcopy(sp_elm)
 
-                from io import BytesIO
-                buf = BytesIO()
-                prs.save(buf)
-                buf.seek(0)
-                new_prs = Presentation(buf)
+                # Build new slide XML with just this one shape
+                new_tree = deepcopy(tree)
+                # Remove all shapes from the new tree's shape tree
+                sp_tree = new_tree.find('.//' + qn('p:spTree'))
+                if sp_tree is None:
+                    continue
+                for child in list(sp_tree):
+                    sp_tree.remove(child)
+                sp_tree.append(sp_copy)
 
-                target_slide = new_prs.slides[slide_idx]
+                # Reposition shape to padding area
+                PAD = 120 * 12700
+                xfrm = _find(sp_copy, 'p:spPr/a:xfrm')
+                if xfrm is None:
+                    xfrm = sp_copy.find(qn('a:xfrm'))
+                if xfrm is not None:
+                    off = xfrm.find(qn('a:off'))
+                    if off is not None:
+                        off.set('x', str(PAD))
+                        off.set('y', str(PAD))
 
-                # Move target shape to top-left with padding
-                target_slide.shapes[shape_idx].left = PAD
-                target_slide.shapes[shape_idx].top = PAD
+                # Resize slide to fit shape + padding (minimum 640px)
+                MIN_W = 640 * 12700
+                MIN_H = 640 * 12700
+                new_w = max(w * 12700 + PAD * 2, MIN_W)
+                new_h = max(h * 12700 + PAD * 2, MIN_H)
+                sSz = _find(new_tree, 'p:cSld/p:spTree')
+                if sSz is not None:
+                    sSz = sSz.getparent()
+                if sSz is None:
+                    sSz = new_tree
+                sSz.set('cx', str(new_w))
+                sSz.set('cy', str(new_h))
 
-                # Hide other shapes by stacking them at 500px from origin.
-                # Extreme positions ( > ~1000px) cause LibreOffice to render
-                # a blank slide. 500px is safely off the 640px minimum slide.
-                OFF_SLIDE = 500 * 12700
-                for i, s in enumerate(target_slide.shapes):
-                    if i != shape_idx:
-                        s.left = OFF_SLIDE
-                        s.top = OFF_SLIDE
+                new_slide_xml = etree.tostring(new_tree, xml_declaration=True, encoding='UTF-8', standalone=True)
 
-                # Delete all other slides
-                for i in range(len(new_prs.slides) - 1, -1, -1):
-                    if i != slide_idx:
-                        sldId = new_prs.slides._sldIdLst[i]
-                        new_prs.slides._sldIdLst.remove(sldId)
+                # Build new PPTX
+                new_buf = BytesIO()
+                with zipfile.ZipFile(new_buf, 'w', zipfile.ZIP_DEFLATED) as out_zf:
+                    # Copy all non-slide entries from original
+                    overwrite = {'[Content_Types].xml', 'ppt/presentation.xml',
+                                 'ppt/_rels/presentation.xml.rels'}
+                    base_name = os.path.splitext(os.path.basename(slide_path))[0]
+                    new_slide_name = f'ppt/slides/{base_name}.xml'
+                    overwrite.add(new_slide_name)
+                    rel_path = slide_rels.get(slide_path, '')
+                    if rel_path:
+                        overwrite.add(rel_path)
 
-                # Resize slide, respecting the 640px minimum
-                new_prs.slide_width = max(shape.width + PAD * 2, MIN_SLIDE)
-                new_prs.slide_height = max(shape.height + PAD * 2, MIN_SLIDE)
+                    for entry_name, data in entries.items():
+                        if entry_name.startswith('ppt/slides/') and entry_name not in overwrite:
+                            continue
+                        if entry_name in overwrite:
+                            continue
+                        out_zf.writestr(entry_name, data)
 
-                output_name = f"slide{slide_idx+1:02d}_shape{shape_idx+1:03d}.pptx"
-                new_prs.save(os.path.join(output_dir, output_name))
+                    # Write the single new slide
+                    out_zf.writestr(new_slide_name, new_slide_xml)
+
+                    # Write slide relationships
+                    if rel_path and rel_path in entries:
+                        out_zf.writestr(rel_path, entries[rel_path])
+
+                    # Update [Content_Types].xml to only include one slide
+                    ct_xml = entries.get('[Content_Types].xml', b'')
+                    if ct_xml:
+                        ct_tree = etree.fromstring(ct_xml)
+                        # Remove other slide overrides
+                        for ov in ct_tree.findall('{http://schemas.openxmlformats.org/package/2006/content-types}Override'):
+                            part = ov.get('PartName', '')
+                            if '/slides/slide' in part and f'/{base_name}.xml' not in part:
+                                ov.getparent().remove(ov)
+                        out_zf.writestr('[Content_Types].xml', etree.tostring(ct_tree, xml_declaration=True, encoding='UTF-8', standalone=True))
+
+                    # Update ppt/presentation.xml to only reference one slide
+                    pres_xml = entries.get('ppt/presentation.xml', b'')
+                    if pres_xml:
+                        pres_tree = etree.fromstring(pres_xml)
+                        sldIdLst = pres_tree.find(qn('p:sldIdLst'))
+                        if sldIdLst is not None:
+                            for sldId in list(sldIdLst):
+                                sldIdLst.remove(sldId)
+                            new_sldId = etree.SubElement(sldIdLst, qn('p:sldId'))
+                            new_sldId.set('id', '256')
+                            new_sldId.set(qn('r:id'), 'rId1')
+                        out_zf.writestr('ppt/presentation.xml', etree.tostring(pres_tree, xml_declaration=True, encoding='UTF-8', standalone=True))
+
+                    # Update ppt/_rels/presentation.xml.rels to only reference one slide
+                    pres_rels = entries.get('ppt/_rels/presentation.xml.rels', b'')
+                    if pres_rels:
+                        rels_tree = etree.fromstring(pres_rels)
+                        for rel in list(rels_tree):
+                            rtype = rel.get('Type', '')
+                            if 'slide' in rtype and 'slideLayout' not in rtype and 'slideMaster' not in rtype:
+                                rels_tree.remove(rel)
+                        new_rel = etree.SubElement(rels_tree, 'Relationship')
+                        new_rel.set('Id', 'rId1')
+                        new_rel.set('Type', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide')
+                        new_rel.set('Target', f'slides/{base_name}.xml')
+                        out_zf.writestr('ppt/_rels/presentation.xml.rels', etree.tostring(rels_tree, xml_declaration=True, encoding='UTF-8', standalone=True))
+
+                output_name = f"slide{si+1:02d}_shape{shape_idx+1:03d}.pptx"
+                with open(os.path.join(output_dir, output_name), 'wb') as f:
+                    f.write(new_buf.getvalue())
 
                 total += 1
                 if total % 20 == 0:
@@ -183,30 +219,14 @@ def split_pptx(source_path, output_dir, slides=None, min_width=0, min_height=0,
             except Exception as e:
                 print(f"  ✗ shape {shape_idx+1}: {e}")
 
-    print(f"\n总计: 导出 {total} 个 | 跳过 {skipped} 个 → {output_dir}/")
+    print(f"\n总计: 导出 {total} 个 → {output_dir}/")
 
 def parse_args():
-    args = {'slides': None, 'min_width': 0, 'min_height': 0, 'skip_text': False,
-            'no_frame': False, 'list_only': False, 'skip_name': None}
+    args = {'skip_name': None, 'list_only': False}
     i = 2
     while i < len(sys.argv):
         a = sys.argv[i]
-        if a == '--slides' and i + 1 < len(sys.argv):
-            args['slides'] = [int(s.strip()) for s in sys.argv[i + 1].split(',')]
-            i += 2
-        elif a == '--min-width' and i + 1 < len(sys.argv):
-            args['min_width'] = int(sys.argv[i + 1])
-            i += 2
-        elif a == '--min-height' and i + 1 < len(sys.argv):
-            args['min_height'] = int(sys.argv[i + 1])
-            i += 2
-        elif a == '--skip-text':
-            args['skip_text'] = True
-            i += 1
-        elif a == '--no-frame':
-            args['no_frame'] = True
-            i += 1
-        elif a == '--list':
+        if a == '--list':
             args['list_only'] = True
             i += 1
         elif a == '--skip-name' and i + 1 < len(sys.argv):
@@ -225,5 +245,9 @@ if __name__ == '__main__':
     out = sys.argv[2] if len(sys.argv) > 2 and not sys.argv[2].startswith('--') else 'split_output'
     opts = parse_args()
 
-    split_pptx(src, out, **opts)
+    if opts['list_only']:
+        list_shapes(src)
+    else:
+        split_pptx(src, out, skip_name=opts['skip_name'])
+
     print("\n下一步: 将这些 .pptx 文件拖入 PPTArts 导入页面批量导入")
