@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tree, Button, Spin } from 'antd';
 import type { DataNode } from 'antd/es/tree';
@@ -35,22 +35,31 @@ export default function Sidebar() {
   const fetchList = useComponentStore((s) => s.fetchList);
   const navigate = useNavigate();
 
+  // Expand all top-level keys by default
+  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
+
   useEffect(() => {
     fetchTree();
   }, [fetchTree]);
 
-  const onSelect = (keys: React.Key[]) => {
-    if (keys.length === 0) return;
-    const key = keys[0] as string;
+  useEffect(() => {
+    if (safeTree.length > 0 && expandedKeys.length === 0) {
+      setExpandedKeys(safeTree.map((c) => c.key));
+    }
+  }, [safeTree]);
 
-    // Only navigate on leaf (second-level) clicks; first-level clicks
-    // are handled by the Tree's native expand/collapse behavior.
+  const onSelect = (_keys: React.Key[], info: any) => {
+    const key = info.node.key as string;
     const parts = key.split('|');
     if (parts.length === 2) {
       selectCategory(key);
       fetchList({ category: parts[0], subcategory: parts[1], page: 1 });
       navigate('/');
     }
+  };
+
+  const onExpand = (keys: React.Key[]) => {
+    setExpandedKeys(keys);
   };
 
   const showAll = () => {
@@ -119,8 +128,9 @@ export default function Sidebar() {
         <Tree
           treeData={treeData}
           selectedKeys={selectedKey ? [selectedKey] : []}
-          onSelect={onSelect as any}
-          defaultExpandAll
+          expandedKeys={expandedKeys}
+          onSelect={onSelect}
+          onExpand={onExpand}
           showIcon={false}
           switcherIcon={(props: any) => <SwitcherIcon expanded={props?.expanded} />}
           style={{ background: 'transparent' }}
