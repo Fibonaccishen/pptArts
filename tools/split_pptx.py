@@ -12,6 +12,7 @@ PPTX 拆分工具：将 PPTX 中每个独立形状拆分为单独的 PPTX 文件
     --min-width 100      跳过宽度小于 N（px）的形状
     --min-height 100     跳过高度小于 N（px）的形状
     --skip-text          跳过纯文本框形状
+    --skip-name "圆角矩形"  跳过名称以指定文字开头的形状
 
 示例:
     python split_pptx.py res.pptx              # 导出所有形状
@@ -87,7 +88,7 @@ def shape_has_no_fill(shape):
         return False
 
 def split_pptx(source_path, output_dir, slides=None, min_width=0, min_height=0,
-               skip_text=False, list_only=False, no_frame=False):
+               skip_text=False, list_only=False, no_frame=False, skip_name=None):
     prs = Presentation(source_path)
 
     if list_only:
@@ -129,6 +130,9 @@ def split_pptx(source_path, output_dir, slides=None, min_width=0, min_height=0,
             if no_frame and shape_has_no_fill(shape):
                 skipped += 1
                 continue
+            if skip_name and shape.name.startswith(skip_name):
+                skipped += 1
+                continue
 
             try:
                 new_prs = Presentation()
@@ -158,7 +162,7 @@ def split_pptx(source_path, output_dir, slides=None, min_width=0, min_height=0,
 
 def parse_args():
     args = {'slides': None, 'min_width': 0, 'min_height': 0, 'skip_text': False,
-            'no_frame': False, 'list_only': False}
+            'no_frame': False, 'list_only': False, 'skip_name': None}
     i = 2
     while i < len(sys.argv):
         a = sys.argv[i]
@@ -180,6 +184,9 @@ def parse_args():
         elif a == '--list':
             args['list_only'] = True
             i += 1
+        elif a == '--skip-name' and i + 1 < len(sys.argv):
+            args['skip_name'] = sys.argv[i + 1]
+            i += 2
         else:
             i += 1
     return args
