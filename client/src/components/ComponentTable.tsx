@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Table, Button, Modal, Form, Input, Select, Popconfirm, message, Space, Tag } from 'antd';
+import { Table, Button, Modal, Form, Input, Select, Popconfirm, Space, Tag, App } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import type { Component } from '../types/component';
 import { useCategoryStore } from '../stores/useCategoryStore';
@@ -20,6 +20,7 @@ export default function ComponentTable({
   items, loading, total, page, pageSize, onRefresh, onPageChange,
 }: Props) {
   const { tree } = useCategoryStore();
+  const { message } = App.useApp();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingComp, setEditingComp] = useState<Component | null>(null);
   const [editForm] = Form.useForm();

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Layout, Typography, Button, message, Modal } from 'antd';
+import { Layout, Typography, Button, Modal, App } from 'antd';
 import { LogoutOutlined, SyncOutlined, RocketOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../stores/useAuthStore';
 import Sidebar from './Sidebar';
@@ -11,6 +11,7 @@ const { Text } = Typography;
 
 export default function AppLayout() {
   const { user, logout } = useAuthStore();
+  const { message } = App.useApp();
   const [checkingUpdate, setCheckingUpdate] = useState(false);
 
   const isElectron = !!window.electronAPI;

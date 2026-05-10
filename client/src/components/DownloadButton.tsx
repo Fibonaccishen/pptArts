@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, message } from 'antd';
+import { Button, App } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
 import type { Component } from '../types/component';
 import * as componentsApi from '../api/components';
@@ -16,6 +16,7 @@ interface Props {
 
 export default function DownloadButton({ component }: Props) {
   const [loading, setLoading] = useState(false);
+  const { message } = App.useApp();
   const fileType = component.file_type || 'pptx';
   const fileTypeLabel = fileType.toUpperCase();
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Typography, Form, Select, Input, Upload, Button, Tag, message, Space } from 'antd';
+import { Typography, Form, Select, Input, Upload, Button, Tag, Space, App } from 'antd';
 import { InboxOutlined, PlusOutlined } from '@ant-design/icons';
 import { useCategoryStore } from '../stores/useCategoryStore';
 import * as componentsApi from '../api/components';
@@ -17,6 +17,7 @@ const PRESET_TAGS = [
 
 export default function ImportPage() {
   const { tree } = useCategoryStore();
+  const { message } = App.useApp();
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<File[]>([]);
