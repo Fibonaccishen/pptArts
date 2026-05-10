@@ -135,24 +135,44 @@ def split_pptx(source_path, output_dir, slides=None, min_width=0, min_height=0,
                 continue
 
             try:
-                # Build a slide that tightly fits the shape so LibreOffice
-                # renders a focused thumbnail without wasted whitespace.
-                PAD = 80 * 12700  # 80px padding in EMU
-                MIN_SIZE = 100 * 12700  # minimum slide dimension
+                # Save-and-reload the original to get a true clone that preserves
+                # all theme/color/style references. deepcopy() loses these.
+                PAD = 80 * 12700
+                # LibreOffice can't render shapes on slides smaller than ~500px.
+                # Keep slide at a minimum size; the server-side sharp.trim() will
+                # crop away the whitespace.
+                MIN_SLIDE = 640 * 12700
 
-                new_prs = Presentation()
-                new_prs.slide_width = max(shape.width + PAD * 2, MIN_SIZE)
-                new_prs.slide_height = max(shape.height + PAD * 2, MIN_SIZE)
+                from io import BytesIO
+                buf = BytesIO()
+                prs.save(buf)
+                buf.seek(0)
+                new_prs = Presentation(buf)
 
-                blank = new_prs.slide_layouts[6]
-                new_slide = new_prs.slides.add_slide(blank)
+                target_slide = new_prs.slides[slide_idx]
 
-                el = deepcopy(shape._element)
-                new_slide.shapes._spTree.append(el)
-                new_shape = new_slide.shapes[-1]
+                # Move target shape to top-left with padding
+                target_slide.shapes[shape_idx].left = PAD
+                target_slide.shapes[shape_idx].top = PAD
 
-                new_shape.left = PAD
-                new_shape.top = PAD
+                # Hide other shapes by stacking them at 500px from origin.
+                # Extreme positions ( > ~1000px) cause LibreOffice to render
+                # a blank slide. 500px is safely off the 640px minimum slide.
+                OFF_SLIDE = 500 * 12700
+                for i, s in enumerate(target_slide.shapes):
+                    if i != shape_idx:
+                        s.left = OFF_SLIDE
+                        s.top = OFF_SLIDE
+
+                # Delete all other slides
+                for i in range(len(new_prs.slides) - 1, -1, -1):
+                    if i != slide_idx:
+                        sldId = new_prs.slides._sldIdLst[i]
+                        new_prs.slides._sldIdLst.remove(sldId)
+
+                # Resize slide, respecting the 640px minimum
+                new_prs.slide_width = max(shape.width + PAD * 2, MIN_SLIDE)
+                new_prs.slide_height = max(shape.height + PAD * 2, MIN_SLIDE)
 
                 output_name = f"slide{slide_idx+1:02d}_shape{shape_idx+1:03d}.pptx"
                 new_prs.save(os.path.join(output_dir, output_name))
