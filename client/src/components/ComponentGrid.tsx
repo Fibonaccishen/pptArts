@@ -1,7 +1,9 @@
-import { Row, Col, Empty, Spin } from 'antd';
+import { Empty, Spin } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import type { Component } from '../types/component';
 import ComponentCard from './ComponentCard';
+
+const CARD_WIDTH = 200;
 
 interface Props {
   items: Component[];
@@ -30,15 +32,19 @@ export default function ComponentGrid({ items, loading, onCardClick, emptyText }
   }
 
   return (
-    <Row gutter={[16, 16]}>
+    <div style={{
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: 16,
+    }}>
       {items.map((comp, index) => (
-        <Col xs={12} sm={8} md={6} lg={6} xl={6} xxl={5} key={comp.id}>
+        <div key={comp.id} style={{ width: CARD_WIDTH }}>
           <ComponentCard
             component={comp}
             onClick={() => onCardClick(comp, index)}
           />
-        </Col>
+        </div>
       ))}
-    </Row>
+    </div>
   );
 }
