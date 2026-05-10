@@ -60,16 +60,22 @@ async function trimWhitespace(inputPath: string, outputPath: string): Promise<vo
 
   if (cropWidth <= 0 || cropHeight <= 0) return;
 
-  // Add 5% padding
+  // Add 5% padding, clamped to image bounds
   const padX = Math.round(cropWidth * 0.05);
   const padY = Math.round(cropHeight * 0.05);
+  const extractLeft = Math.max(0, left - padX);
+  const extractTop = Math.max(0, top - padY);
+  const extractWidth = Math.min(cropWidth + padX * 2, width - extractLeft);
+  const extractHeight = Math.min(cropHeight + padY * 2, height - extractTop);
+
+  if (extractWidth <= 0 || extractHeight <= 0) return;
 
   await sharp(inputPath)
     .extract({
-      left: Math.max(0, left - padX),
-      top: Math.max(0, top - padY),
-      width: Math.min(width - left + padX, cropWidth + padX * 2),
-      height: Math.min(height - top + padY, cropHeight + padY * 2),
+      left: extractLeft,
+      top: extractTop,
+      width: extractWidth,
+      height: extractHeight,
     })
     .toFile(outputPath);
 }
