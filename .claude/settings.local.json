@@ -32,7 +32,14 @@
       "Bash(xargs kill -9)",
       "Bash(curl -s http://localhost:3001/api/categories -H 'Authorization: Bearer test')",
       "Bash(kill %1 %2)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(brew install *)",
+      "Bash(soffice --headless --convert-to png --outdir /tmp /tmp/test.pptx)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(mkdir -p /tmp/thumbtest)",
+      "Bash(soffice --headless --convert-to png --outdir /tmp/thumbtest server/uploads/4137a133-c9ec-471f-9d75-c587e084c916.pptx)",
+      "Read(//tmp/**)",
+      "Bash(npm uninstall *)"
     ],
     "additionalDirectories": [
       "/Users/shenfangzhi/Desktop/vibe-coding/pptArts",
