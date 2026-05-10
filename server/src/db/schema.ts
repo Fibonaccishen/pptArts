@@ -19,6 +19,7 @@ export function initializeDatabase(): void {
       tags TEXT DEFAULT '',
       pptx_path TEXT NOT NULL,
       thumbnail_path TEXT NOT NULL,
+      file_type TEXT NOT NULL DEFAULT 'pptx',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
