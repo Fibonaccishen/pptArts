@@ -84,15 +84,53 @@ html, body, #root {
   border-color: var(--accent) !important;
 }
 
-/* Tree component */
-.ant-tree .ant-tree-node-content-wrapper {
-  border-radius: 6px;
-  padding: 4px 8px;
+/* Tree component — soft modern override */
+.sidebar-tree.ant-tree {
+  background: transparent !important;
 }
 
-.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
-  background: rgba(74,124,89,0.10) !important;
-  color: var(--accent);
+.sidebar-tree .ant-tree-treenode {
+  padding: 1px 0;
+}
+
+.sidebar-tree .ant-tree-node-content-wrapper {
+  border-radius: 6px;
+  padding: 0 !important;
+  background: transparent !important;
+  transition: none;
+}
+
+.sidebar-tree .ant-tree-node-content-wrapper:hover {
+  background: transparent !important;
+}
+
+.sidebar-tree .ant-tree-node-selected .ant-tree-node-content-wrapper {
+  background: transparent !important;
+}
+
+.sidebar-tree .ant-tree-switcher {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 18px !important;
+  height: 18px !important;
+  line-height: 1 !important;
+  margin-right: 2px;
+  border-radius: 5px;
+  color: #B5B5B5 !important;
+  transition: background 0.15s ease;
+}
+
+.sidebar-tree .ant-tree-switcher:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+.sidebar-tree .ant-tree-switcher .ant-tree-switcher-icon {
+  display: none !important;
+}
+
+.sidebar-tree .ant-tree-indent-unit {
+  width: 20px;
 }
 
 /* Select dropdown */
