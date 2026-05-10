@@ -116,7 +116,7 @@ export default function ComponentTable({
       width: 200,
       render: (tags: string) =>
         tags
-          ? tags.split(',').filter(Boolean).map((t) => (
+          ? tags.split(/[,，]+/).filter(Boolean).map((t) => (
               <Tag key={t}>{t.trim()}</Tag>
             ))
           : '-',

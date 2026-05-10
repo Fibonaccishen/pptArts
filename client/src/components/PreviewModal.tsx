@@ -22,7 +22,7 @@ export default function PreviewModal({
 
   const hasThumbnail = component.thumbnail_path && component.thumbnail_path.length > 0;
   const tags = component.tags
-    ? component.tags.split(',').filter(Boolean).map((t) => t.trim())
+    ? component.tags.split(/[,，]+/).filter(Boolean).map((t) => t.trim())
     : [];
 
   return (
