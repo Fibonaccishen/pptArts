@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Layout, Typography, Button, theme, message, Modal } from 'antd';
-import { LogoutOutlined, SyncOutlined } from '@ant-design/icons';
+import { Layout, Typography, Button, message, Modal } from 'antd';
+import { LogoutOutlined, SyncOutlined, RocketOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../stores/useAuthStore';
 import Sidebar from './Sidebar';
 import SearchBar from './SearchBar';
@@ -11,7 +11,6 @@ const { Text } = Typography;
 
 export default function AppLayout() {
   const { user, logout } = useAuthStore();
-  const { token: themeToken } = theme.useToken();
   const [checkingUpdate, setCheckingUpdate] = useState(false);
 
   const isElectron = !!window.electronAPI;
@@ -63,8 +62,8 @@ export default function AppLayout() {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider width={220} style={{
-        background: themeToken.colorBgContainer,
-        borderRight: `1px solid ${themeToken.colorBorderSecondary}`,
+        background: '#FAFAF8',
+        borderRight: '1px solid #EBEAE6',
         overflow: 'auto',
       }}>
         <div style={{
@@ -72,20 +71,33 @@ export default function AppLayout() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderBottom: `1px solid ${themeToken.colorBorderSecondary}`,
+          gap: 10,
+          borderBottom: '1px solid #EBEAE6',
         }}>
-          <Text strong style={{ fontSize: 18 }}>PPTArts</Text>
+          <div style={{
+            width: 32, height: 32, borderRadius: 8,
+            background: 'linear-gradient(135deg, #5A9E6F 0%, #4A7C59 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 6px rgba(74,124,89,0.2)',
+          }}>
+            <RocketOutlined style={{ fontSize: 16, color: '#fff' }} />
+          </div>
+          <Text strong style={{ fontSize: 17 }}>PPTArts</Text>
         </div>
         <Sidebar />
       </Sider>
       <Layout>
         <Header style={{
-          background: themeToken.colorBgContainer,
-          borderBottom: `1px solid ${themeToken.colorBorderSecondary}`,
+          background: '#FFFFFF',
+          borderBottom: '1px solid #EBEAE6',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
           display: 'flex',
           alignItems: 'center',
           padding: '0 24px',
           gap: 16,
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
         }}>
           <SearchBar />
           <div style={{ flex: 1 }} />

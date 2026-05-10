@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tree, Button, Spin } from 'antd';
-import { ImportOutlined, SettingOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { ImportOutlined, SettingOutlined, AppstoreOutlined, FolderOutlined } from '@ant-design/icons';
 import { useCategoryStore } from '../stores/useCategoryStore';
 import { useComponentStore } from '../stores/useComponentStore';
 import type { CategoryNode } from '../types/category';
@@ -40,13 +40,14 @@ export default function Sidebar() {
   const treeData = safeTree.map((cat): any => ({
     key: cat.key,
     title: cat.title,
+    icon: <FolderOutlined style={{ color: '#B5B5B5', fontSize: 13 }} />,
     children: cat.children?.map((child: CategoryNode) => ({
       key: child.key,
       title: (
         <span>
           {child.title}
           {child.count !== undefined && child.count > 0 && (
-            <span style={{ color: '#999', marginLeft: 4 }}>({child.count})</span>
+            <span style={{ color: '#B5B5B5', marginLeft: 4 }}>({child.count})</span>
           )}
         </span>
       ),

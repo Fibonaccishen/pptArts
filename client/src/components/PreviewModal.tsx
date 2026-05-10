@@ -37,13 +37,14 @@ export default function PreviewModal({
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{
-          background: '#f5f5f5',
-          borderRadius: 8,
+          background: '#F8F7F5',
+          borderRadius: 12,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: 300,
           position: 'relative',
+          border: '1px solid #EBEAE6',
         }}>
           {hasThumbnail ? (
             <img
