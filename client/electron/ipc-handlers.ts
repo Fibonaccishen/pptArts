@@ -1,4 +1,5 @@
 import { ipcMain, dialog } from 'electron';
+import { autoUpdater } from 'electron-updater';
 import fs from 'fs';
 
 export function registerIpcHandlers() {
@@ -11,5 +12,15 @@ export function registerIpcHandlers() {
     if (canceled || !filePath) return null;
     fs.writeFileSync(filePath, Buffer.from(buffer));
     return filePath;
+  });
+
+  ipcMain.handle('check-for-updates', async () => {
+    const result = await autoUpdater.checkForUpdatesAndNotify();
+    if (!result) return { updateAvailable: false };
+    return { updateAvailable: true, version: result.updateInfo.version };
+  });
+
+  ipcMain.handle('quit-and-install', () => {
+    autoUpdater.quitAndInstall();
   });
 }

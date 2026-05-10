@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
 import authRoutes from './routes/auth.routes.js';
 import categoryRoutes from './routes/category.routes.js';
 import componentRoutes from './routes/component.routes.js';
@@ -10,6 +12,12 @@ export function createApp() {
 
   app.use(cors());
   app.use(express.json());
+
+  const updatesDir = path.resolve('./updates');
+  if (!fs.existsSync(updatesDir)) {
+    fs.mkdirSync(updatesDir, { recursive: true });
+  }
+  app.use('/updates', express.static(updatesDir, { maxAge: 0 }));
 
   app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok' });
