@@ -149,6 +149,23 @@ async function trimAndResize(sourcePath: string, outputPath: string): Promise<vo
   }
 }
 
+// ---- step 4: image-only pipeline (PNG/SVG) ----
+
+async function processImage(filePath: string): Promise<string> {
+  const finalName = `${uuid()}.png`;
+  const finalPath = path.join(config.thumbnailDir, finalName);
+
+  try {
+    await trimAndResize(filePath, finalPath);
+    console.log(`[Thumbnail] image processed: ${finalName}`);
+  } catch (err: any) {
+    console.warn(`[Thumbnail] image trim failed, copying raw: ${err.message}`);
+    fs.copyFileSync(filePath, finalPath);
+  }
+
+  return finalName;
+}
+
 // ---- main pipeline ----
 
 async function processOne(pptxPath: string): Promise<string> {
@@ -195,7 +212,10 @@ async function processOne(pptxPath: string): Promise<string> {
 
 let queue: Promise<any> = Promise.resolve();
 
-export function generateThumbnail(pptxPath: string): Promise<string> {
-  queue = queue.then(() => processOne(pptxPath));
+export function generateThumbnail(filePath: string, fileType: string): Promise<string> {
+  const task = fileType === 'pptx'
+    ? processOne(filePath)
+    : processImage(filePath);
+  queue = queue.then(() => task);
   return queue;
 }
