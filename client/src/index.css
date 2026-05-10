@@ -90,7 +90,8 @@ html, body, #root {
 }
 
 .sidebar-tree .ant-tree-treenode {
-  padding: 1px 0;
+  padding: 2px 0;
+  align-items: center !important;
 }
 
 .sidebar-tree .ant-tree-node-content-wrapper {
@@ -98,13 +99,21 @@ html, body, #root {
   padding: 0 !important;
   background: transparent !important;
   transition: none;
+  display: flex !important;
+  align-items: center !important;
 }
 
 .sidebar-tree .ant-tree-node-content-wrapper:hover {
   background: transparent !important;
 }
 
-.sidebar-tree .ant-tree-node-selected .ant-tree-node-content-wrapper {
+/* Don't show green highlight on first-level nodes */
+.sidebar-tree > .ant-tree-treenode > .ant-tree-node-content-wrapper.ant-tree-node-selected {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+.sidebar-tree .ant-tree-treenode-leaf .ant-tree-node-content-wrapper.ant-tree-node-selected {
   background: transparent !important;
 }
 

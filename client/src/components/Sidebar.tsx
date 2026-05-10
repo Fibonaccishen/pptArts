@@ -69,7 +69,6 @@ export default function Sidebar() {
         {cat.title}
       </span>
     ),
-    selectable: false,
     children: cat.children?.map((child: CategoryNode): DataNode => ({
       key: child.key,
       title: (
