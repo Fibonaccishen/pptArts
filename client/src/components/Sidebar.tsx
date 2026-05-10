@@ -35,7 +35,6 @@ export default function Sidebar() {
   const fetchList = useComponentStore((s) => s.fetchList);
   const navigate = useNavigate();
 
-  // Expand all top-level keys by default
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
 
   useEffect(() => {
@@ -48,18 +47,17 @@ export default function Sidebar() {
     }
   }, [safeTree]);
 
-  const onSelect = (_keys: React.Key[], info: any) => {
-    const key = info.node.key as string;
-    const parts = key.split('|');
-    if (parts.length === 2) {
-      selectCategory(key);
-      fetchList({ category: parts[0], subcategory: parts[1], page: 1 });
-      navigate('/');
-    }
+  const toggleExpand = (key: React.Key) => {
+    setExpandedKeys((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
+    );
   };
 
-  const onExpand = (keys: React.Key[]) => {
-    setExpandedKeys(keys);
+  const selectLeaf = (childKey: string) => {
+    const parts = childKey.split('|');
+    selectCategory(childKey);
+    fetchList({ category: parts[0], subcategory: parts[1], page: 1 });
+    navigate('/');
   };
 
   const showAll = () => {
@@ -73,25 +71,33 @@ export default function Sidebar() {
   const treeData = safeTree.map((cat): DataNode => ({
     key: cat.key,
     title: (
-      <span style={{ fontWeight: 600, fontSize: 13, color: '#555' }}>
+      <span
+        onClick={(e) => { e.stopPropagation(); toggleExpand(cat.key); }}
+        style={{ fontWeight: 600, fontSize: 13, color: '#555', cursor: 'default' }}
+      >
         {cat.title}
       </span>
     ),
+    selectable: false,
     children: cat.children?.map((child: CategoryNode): DataNode => ({
       key: child.key,
       title: (
-        <span style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '3px 10px',
-          borderRadius: 7,
-          fontSize: 13,
-          color: isSelected(child.key) ? '#4A7C59' : '#444',
-          fontWeight: isSelected(child.key) ? 500 : 400,
-          background: isSelected(child.key) ? 'rgba(74,124,89,0.08)' : 'transparent',
-          transition: 'all 0.15s ease',
-        }}>
+        <span
+          onClick={(e) => { e.stopPropagation(); selectLeaf(child.key); }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '3px 10px',
+            borderRadius: 7,
+            fontSize: 13,
+            color: isSelected(child.key) ? '#4A7C59' : '#444',
+            fontWeight: isSelected(child.key) ? 500 : 400,
+            background: isSelected(child.key) ? 'rgba(74,124,89,0.08)' : 'transparent',
+            transition: 'all 0.15s ease',
+            cursor: 'pointer',
+          }}
+        >
           {child.title}
           {child.count !== undefined && child.count > 0 && (
             <span style={{
@@ -129,8 +135,7 @@ export default function Sidebar() {
           treeData={treeData}
           selectedKeys={selectedKey ? [selectedKey] : []}
           expandedKeys={expandedKeys}
-          onSelect={onSelect}
-          onExpand={onExpand}
+          onExpand={(keys) => setExpandedKeys(keys)}
           showIcon={false}
           switcherIcon={(props: any) => <SwitcherIcon expanded={props?.expanded} />}
           style={{ background: 'transparent' }}
