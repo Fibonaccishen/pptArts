@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Typography } from 'antd';
+import { Typography, Segmented } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useSearchStore } from '../stores/useSearchStore';
 import ComponentGrid from '../components/ComponentGrid';
@@ -13,6 +13,7 @@ export default function SearchResultsPage() {
   const { query, results, total, page, pageSize, isSearching, search } = useSearchStore();
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
+  const [sort, setSort] = useState<'name' | 'download_count'>('name');
 
   const openPreview = (_comp: Component, index: number) => {
     setPreviewIndex(index);
@@ -20,7 +21,7 @@ export default function SearchResultsPage() {
   };
 
   const onPageChange = (p: number, _ps: number) => {
-    search(query, p);
+    search(query, p, sort);
   };
 
   return (
@@ -47,6 +48,20 @@ export default function SearchResultsPage() {
           <Text type="secondary" style={{ display: 'block', fontSize: 12, marginTop: 1 }}>
             共 {total} 个结果
           </Text>
+        </div>
+        <div style={{ marginLeft: 'auto' }}>
+          <Segmented
+            size="small"
+            value={sort}
+            onChange={(v) => {
+              setSort(v as 'name' | 'download_count');
+              search(query, 1, v as 'name' | 'download_count');
+            }}
+            options={[
+              { label: '按名称', value: 'name' },
+              { label: '按下载量', value: 'download_count' },
+            ]}
+          />
         </div>
       </div>
 

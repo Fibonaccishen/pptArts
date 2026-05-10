@@ -7,6 +7,7 @@ export interface Component {
   pptx_path: string;
   thumbnail_path: string;
   file_type: string;
+  download_count: number;
   created_at: string;
   updated_at: string;
 }
@@ -15,6 +16,7 @@ export interface ComponentListParams {
   category?: string;
   subcategory?: string;
   search?: string;
+  sort?: 'name' | 'download_count';
   page?: number;
   pageSize?: number;
 }

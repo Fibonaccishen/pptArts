@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Typography } from 'antd';
+import { Typography, Segmented } from 'antd';
 import { FolderOutlined, AppstoreOutlined } from '@ant-design/icons';
 import { useComponentStore } from '../stores/useComponentStore';
 import { useCategoryStore } from '../stores/useCategoryStore';
@@ -16,10 +16,11 @@ export default function BrowsePage() {
 
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
+  const [sort, setSort] = useState<'name' | 'download_count'>('name');
 
   useEffect(() => {
-    fetchList({ page, pageSize });
-  }, [page, pageSize]);
+    fetchList({ page, pageSize, sort });
+  }, [page, pageSize, sort]);
 
   const categoryInfo = useMemo(() => {
     if (!selectedKey) return { icon: <AppstoreOutlined />, parts: ['全部组件'] };
@@ -49,7 +50,7 @@ export default function BrowsePage() {
   };
 
   const onPageChange = (p: number, ps: number) => {
-    fetchList({ category: selectedKey?.split('|')[0], subcategory: selectedKey?.split('|')[1], page: p, pageSize: ps });
+    fetchList({ category: selectedKey?.split('|')[0], subcategory: selectedKey?.split('|')[1], page: p, pageSize: ps, sort });
   };
 
   return (
@@ -84,6 +85,17 @@ export default function BrowsePage() {
           <Text type="secondary" style={{ display: 'block', fontSize: 12, marginTop: 1 }}>
             {total} 个组件
           </Text>
+        </div>
+        <div style={{ marginLeft: 'auto' }}>
+          <Segmented
+            size="small"
+            value={sort}
+            onChange={(v) => setSort(v as 'name' | 'download_count')}
+            options={[
+              { label: '按名称', value: 'name' },
+              { label: '按下载量', value: 'download_count' },
+            ]}
+          />
         </div>
       </div>
 

@@ -10,7 +10,7 @@ interface SearchState {
   pageSize: number;
   isSearching: boolean;
   setQuery: (q: string) => void;
-  search: (query: string, page?: number) => Promise<void>;
+  search: (query: string, page?: number, sort?: 'name' | 'download_count') => Promise<void>;
   clearSearch: () => void;
 }
 
@@ -24,12 +24,13 @@ export const useSearchStore = create<SearchState>((set) => ({
 
   setQuery: (q) => set({ query: q }),
 
-  search: async (query, page = 1) => {
+  search: async (query, page = 1, sort = 'name') => {
     set({ isSearching: true, query });
     const result = await componentsApi.fetchList({
       search: query,
       page,
       pageSize: 20,
+      sort,
     });
     set({
       results: result.data,
