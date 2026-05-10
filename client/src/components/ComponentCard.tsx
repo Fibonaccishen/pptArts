@@ -1,5 +1,6 @@
 import { Card, Typography } from 'antd';
 import type { Component } from '../types/component';
+import FileTypeBadge from './FileTypeBadge';
 
 const { Text } = Typography;
 
@@ -38,7 +39,10 @@ export default function ComponentCard({ component, onClick }: Props) {
       }
       styles={{ body: { padding: '8px 12px', textAlign: 'center' } }}
     >
-      <Text ellipsis style={{ fontSize: 13 }}>{component.name}</Text>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+        <Text ellipsis style={{ fontSize: 13 }}>{component.name}</Text>
+        <FileTypeBadge type={component.file_type} />
+      </div>
     </Card>
   );
 }

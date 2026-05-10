@@ -6,6 +6,7 @@ export interface Component {
   tags: string;
   pptx_path: string;
   thumbnail_path: string;
+  file_type: string;
   created_at: string;
   updated_at: string;
 }

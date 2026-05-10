@@ -2,6 +2,7 @@ import { Modal, Button, Tag, Typography, Space } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { Component } from '../types/component';
 import DownloadButton from './DownloadButton';
+import FileTypeBadge from './FileTypeBadge';
 
 const { Text } = Typography;
 
@@ -77,6 +78,7 @@ export default function PreviewModal({
           <div>
             <Text type="secondary">分类：</Text>
             <Text>{component.category} &gt; {component.subcategory}</Text>
+            <FileTypeBadge type={component.file_type} />
           </div>
           {tags.length > 0 && (
             <div>

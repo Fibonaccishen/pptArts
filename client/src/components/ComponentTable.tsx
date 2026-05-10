@@ -4,6 +4,7 @@ import { ReloadOutlined } from '@ant-design/icons';
 import type { Component } from '../types/component';
 import { useCategoryStore } from '../stores/useCategoryStore';
 import * as componentsApi from '../api/components';
+import FileTypeBadge from './FileTypeBadge';
 
 interface Props {
   items: Component[];
@@ -106,6 +107,12 @@ export default function ComponentTable({
         ) : (
           <span style={{ color: '#ccc' }}>无</span>
         ),
+    },
+    {
+      title: '类型',
+      dataIndex: 'file_type',
+      width: 70,
+      render: (type: string) => <FileTypeBadge type={type} />,
     },
     { title: '组件名称', dataIndex: 'name', ellipsis: true },
     { title: '一级分类', dataIndex: 'category', width: 120 },

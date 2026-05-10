@@ -59,7 +59,7 @@ export default function ImportPage() {
 
   const handleImport = async () => {
     if (fileList.length === 0) {
-      message.warning('请选择 PPTX 文件');
+      message.warning('请选择文件');
       return;
     }
     try {
@@ -104,7 +104,7 @@ export default function ImportPage() {
 
       <Dragger
         multiple
-        accept=".pptx"
+        accept=".pptx,.png,.svg"
         beforeUpload={(file) => {
           setFileList((prev) => [...prev, file]);
           return false;
@@ -120,7 +120,7 @@ export default function ImportPage() {
         style={{ marginBottom: 24 }}
       >
         <p className="ant-upload-drag-icon"><InboxOutlined /></p>
-        <p>点击或拖拽 PPTX 文件到此区域</p>
+        <p>点击或拖拽 PPTX / PNG / SVG 文件到此区域</p>
         <p style={{ color: '#999' }}>支持一次选择多个文件，单文件不超过 50MB</p>
       </Dragger>
 
