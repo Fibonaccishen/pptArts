@@ -135,9 +135,14 @@ def split_pptx(source_path, output_dir, slides=None, min_width=0, min_height=0,
                 continue
 
             try:
+                # Build a slide that tightly fits the shape so LibreOffice
+                # renders a focused thumbnail without wasted whitespace.
+                PAD = 80 * 12700  # 80px padding in EMU
+                MIN_SIZE = 100 * 12700  # minimum slide dimension
+
                 new_prs = Presentation()
-                new_prs.slide_width = slide_width
-                new_prs.slide_height = slide_height
+                new_prs.slide_width = max(shape.width + PAD * 2, MIN_SIZE)
+                new_prs.slide_height = max(shape.height + PAD * 2, MIN_SIZE)
 
                 blank = new_prs.slide_layouts[6]
                 new_slide = new_prs.slides.add_slide(blank)
@@ -146,8 +151,8 @@ def split_pptx(source_path, output_dir, slides=None, min_width=0, min_height=0,
                 new_slide.shapes._spTree.append(el)
                 new_shape = new_slide.shapes[-1]
 
-                new_shape.left = slide_width // 2 - shape.width // 2
-                new_shape.top = slide_height // 2 - shape.height // 2
+                new_shape.left = PAD
+                new_shape.top = PAD
 
                 output_name = f"slide{slide_idx+1:02d}_shape{shape_idx+1:03d}.pptx"
                 new_prs.save(os.path.join(output_dir, output_name))
