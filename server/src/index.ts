@@ -6,6 +6,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 import { createApp } from './app.js';
 import { initializeDatabase } from './db/schema.js';
 import { seed } from './db/seed.js';
+import { cleanupOrphanFiles } from './services/component.service.js';
 import { config } from './config.js';
 import fs from 'fs';
 
@@ -19,6 +20,7 @@ function main() {
   ensureDirectories();
   initializeDatabase();
   seed();
+  cleanupOrphanFiles();
 
   const app = createApp();
   app.listen(config.port, () => {

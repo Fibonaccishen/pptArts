@@ -1,6 +1,7 @@
 import { getDb } from '../db/connection.js';
 import fs from 'fs';
 import path from 'path';
+import { config } from '../config.js';
 import type { Component, ComponentListParams, PaginatedResponse, ImportComponentDto, UpdateComponentDto } from '../types/index.js';
 
 export function list(params: ComponentListParams): PaginatedResponse<Component> {
@@ -181,4 +182,43 @@ function deleteFile(relativePath: string) {
   } catch {
     // ignore file deletion errors
   }
+}
+
+export function cleanupOrphanFiles(): { uploadsDeleted: number; thumbnailsDeleted: number } {
+  const db = getDb();
+  const rows = db.prepare('SELECT pptx_path, thumbnail_path FROM components').all() as { pptx_path: string; thumbnail_path: string }[];
+  const dbUploadPaths = new Set(rows.map((r) => path.resolve(r.pptx_path)));
+  const dbThumbPaths = new Set(rows.map((r) => path.resolve(r.thumbnail_path)));
+
+  let uploadsDeleted = 0;
+  let thumbnailsDeleted = 0;
+
+  const uploadDir = path.resolve(config.uploadDir);
+  const thumbDir = path.resolve(config.thumbnailDir);
+
+  if (fs.existsSync(uploadDir)) {
+    for (const entry of fs.readdirSync(uploadDir)) {
+      const abs = path.join(uploadDir, entry);
+      if (fs.statSync(abs).isFile() && !dbUploadPaths.has(abs)) {
+        fs.unlinkSync(abs);
+        uploadsDeleted++;
+      }
+    }
+  }
+
+  if (fs.existsSync(thumbDir)) {
+    for (const entry of fs.readdirSync(thumbDir)) {
+      const abs = path.join(thumbDir, entry);
+      if (fs.statSync(abs).isFile() && !dbThumbPaths.has(abs)) {
+        fs.unlinkSync(abs);
+        thumbnailsDeleted++;
+      }
+    }
+  }
+
+  if (uploadsDeleted > 0 || thumbnailsDeleted > 0) {
+    console.log(`[Cleanup] 删除了 ${uploadsDeleted} 个孤儿上传文件 + ${thumbnailsDeleted} 个孤儿缩略图`);
+  }
+
+  return { uploadsDeleted, thumbnailsDeleted };
 }

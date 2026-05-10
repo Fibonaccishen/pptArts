@@ -16,5 +16,6 @@ router.post('/import', uploadFile.array('files', 200), ctrl.importComponents);
 router.put('/:id', ctrl.update);
 router.delete('/:id', ctrl.remove);
 router.post('/batch-delete', ctrl.batchRemove);
+router.post('/cleanup', ctrl.cleanup);
 
 export default router;

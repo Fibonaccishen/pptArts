@@ -146,6 +146,15 @@ export function remove(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+export function cleanup(req: Request, res: Response, next: NextFunction) {
+  try {
+    const result = componentService.cleanupOrphanFiles();
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export function batchRemove(req: Request, res: Response, next: NextFunction) {
   try {
     const { ids } = req.body;
