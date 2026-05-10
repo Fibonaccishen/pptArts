@@ -46,16 +46,16 @@ export function getById(id: number): Component {
   return comp;
 }
 
-export function getByIdForDownload(id: number): { pptxPath: string; name: string } {
+export function getByIdForDownload(id: number): { pptxPath: string; name: string; file_type: string } {
   const comp = getById(id);
-  return { pptxPath: comp.pptx_path, name: comp.name };
+  return { pptxPath: comp.pptx_path, name: comp.name, file_type: comp.file_type };
 }
 
 export function importMany(items: ImportComponentDto[]): Component[] {
   const db = getDb();
   const insert = db.prepare(`
-    INSERT INTO components (name, category, subcategory, tags, pptx_path, thumbnail_path)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO components (name, category, subcategory, tags, pptx_path, thumbnail_path, file_type)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
 
   const result: Component[] = [];
@@ -68,6 +68,7 @@ export function importMany(items: ImportComponentDto[]): Component[] {
         item.tags || '',
         '',  // pptx_path to be filled by caller
         '',  // thumbnail_path to be filled by caller
+        item.file_type || 'pptx',
       );
       result.push({
         id: Number(info.lastInsertRowid),
@@ -77,6 +78,7 @@ export function importMany(items: ImportComponentDto[]): Component[] {
         tags: item.tags || '',
         pptx_path: '',
         thumbnail_path: '',
+        file_type: item.file_type || 'pptx',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
@@ -91,8 +93,8 @@ export function importWithPaths(
 ): Component[] {
   const db = getDb();
   const insert = db.prepare(`
-    INSERT INTO components (name, category, subcategory, tags, pptx_path, thumbnail_path)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO components (name, category, subcategory, tags, pptx_path, thumbnail_path, file_type)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
 
   const result: Component[] = [];
@@ -100,7 +102,7 @@ export function importWithPaths(
     for (const item of items) {
       const info = insert.run(
         item.name, item.category, item.subcategory, item.tags || '',
-        item.pptxPath, item.thumbnailPath,
+        item.pptxPath, item.thumbnailPath, item.file_type || 'pptx',
       );
       result.push({
         id: Number(info.lastInsertRowid),
@@ -110,6 +112,7 @@ export function importWithPaths(
         tags: item.tags || '',
         pptx_path: item.pptxPath,
         thumbnail_path: item.thumbnailPath,
+        file_type: item.file_type || 'pptx',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });

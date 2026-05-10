@@ -31,13 +31,20 @@ export function getById(req: Request, res: Response, next: NextFunction) {
 
 export function download(req: Request, res: Response, next: NextFunction) {
   try {
-    const { pptxPath, name } = componentService.getByIdForDownload(parseInt(req.params.id, 10));
+    const { pptxPath, name, file_type } = componentService.getByIdForDownload(parseInt(req.params.id, 10));
     const absPath = path.resolve(pptxPath);
     if (!fs.existsSync(absPath)) {
       res.status(404).json({ error: { code: 'NOT_FOUND', message: '文件不存在' } });
       return;
     }
-    const encodedName = encodeURIComponent(name + '.pptx');
+    const mimeTypes: Record<string, string> = {
+      pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      png: 'image/png',
+      svg: 'image/svg+xml',
+    };
+    const mimeType = mimeTypes[file_type] || 'application/octet-stream';
+    const encodedName = encodeURIComponent(`${name}.${file_type}`);
+    res.setHeader('Content-Type', mimeType);
     res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodedName}`);
     res.sendFile(absPath);
   } catch (err) {
@@ -63,7 +70,7 @@ export async function importComponents(req: Request, res: Response, next: NextFu
   try {
     const files = req.files as Express.Multer.File[];
     if (!files || files.length === 0) {
-      res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: '请选择 PPTX 文件' } });
+      res.status(400).json({ error: { code: 'VALIDATION_ERROR', message: '请选择文件' } });
       return;
     }
 
@@ -75,15 +82,17 @@ export async function importComponents(req: Request, res: Response, next: NextFu
 
     const results: Array<{ id: number; name: string; success: boolean; error?: string }> = [];
 
-    const items: Array<{ name: string; category: string; subcategory: string; tags: string; pptxPath: string; thumbnailPath: string }> = [];
+    const items: Array<{ name: string; category: string; subcategory: string; tags: string; pptxPath: string; thumbnailPath: string; file_type: string }> = [];
 
     for (const file of files) {
       const rawName = Buffer.from(file.originalname, 'latin1').toString('utf8');
-      const componentName = name || path.basename(rawName, '.pptx');
+      const ext = path.extname(rawName).toLowerCase();
+      const fileType = ext === '.pptx' ? 'pptx' : ext === '.png' ? 'png' : 'svg';
+      const componentName = name || path.basename(rawName, ext);
       try {
         let thumbnailPath = '';
         try {
-          const thumbnailName = await generateThumbnail(file.path);
+          const thumbnailName = await generateThumbnail(file.path, fileType);
           thumbnailPath = path.join('thumbnails', thumbnailName);
         } catch (thumbErr: any) {
           console.warn(`[Import] 缩略图跳过 (${componentName}): ${thumbErr.message}`);
@@ -95,6 +104,7 @@ export async function importComponents(req: Request, res: Response, next: NextFu
           tags: tags || '',
           pptxPath: file.path,
           thumbnailPath,
+          file_type: fileType,
         });
         results.push({ id: 0, name: componentName, success: true });
       } catch (err: any) {
