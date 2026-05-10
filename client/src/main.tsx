@@ -34,9 +34,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             siderBg: '#FAFAF8',
             bodyBg: '#F7F6F3',
           },
-          Menu: {
-            itemBg: 'transparent',
-          },
           Input: {
             borderRadius: 20,
             controlHeight: 36,

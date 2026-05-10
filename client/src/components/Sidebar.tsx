@@ -10,16 +10,10 @@ import type { CategoryNode } from '../types/category';
 function SwitcherIcon({ expanded }: { expanded?: boolean }) {
   return (
     <span style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: 18,
-      height: 18,
-      borderRadius: 5,
-      transition: 'all 0.2s ease',
       transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-      opacity: 0.45,
-      background: expanded ? 'rgba(0,0,0,0.04)' : 'transparent',
+      transition: 'transform 0.2s ease',
+      opacity: expanded ? 0.55 : 0.4,
+      lineHeight: 0,
     }}>
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
         <path d="M3.5 2L6.5 5L3.5 8" stroke="currentColor" strokeWidth="1.5"

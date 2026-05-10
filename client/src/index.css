@@ -5,12 +5,9 @@
   --bg-surface: #FFFFFF;
   --bg-sidebar: #FAFAF8;
   --accent: #4A7C59;
-  --accent-hover: #3D6A4A;
   --text-primary: #2C2C2C;
   --text-secondary: #8C8C8C;
   --border: #EBEAE6;
-  --danger: #D9705A;
-  --success: #5A9E6F;
   --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
   --shadow-card-hover: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
   --radius-sm: 8px;
@@ -89,10 +86,6 @@ html, body, #root {
   background: transparent !important;
 }
 
-.sidebar-tree.ant-tree {
-  background: transparent !important;
-}
-
 .sidebar-tree .ant-tree-treenode {
   padding: 1px 0;
   align-items: center !important;
@@ -150,11 +143,4 @@ html, body, #root {
   background: var(--bg-page) !important;
   color: var(--text-secondary);
   font-weight: 500;
-}
-
-/* Sidebar divider */
-.sidebar-nav-divider {
-  border-top: 1px solid var(--border);
-  padding-top: 8px;
-  margin-top: 8px;
 }
