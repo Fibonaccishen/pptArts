@@ -48,7 +48,7 @@ function createWindow() {
   }
 
   mainWindow.webContents.on('did-finish-load', () => {
-    autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.checkForUpdates();
   });
 }
 
@@ -65,8 +65,11 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
 
-autoUpdater.on('update-available', () => {
-  mainWindow?.webContents.send('update-status', { status: 'available' });
+autoUpdater.on('update-available', (info) => {
+  mainWindow?.webContents.send('update-status', {
+    status: 'available',
+    version: info.version,
+  });
 });
 
 autoUpdater.on('update-downloaded', () => {

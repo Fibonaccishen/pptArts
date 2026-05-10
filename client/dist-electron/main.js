@@ -15455,9 +15455,12 @@ function registerIpcHandlers() {
     return filePath;
   });
   require$$1$3.ipcMain.handle("check-for-updates", async () => {
-    const result = await mainExports.autoUpdater.checkForUpdatesAndNotify();
+    const result = await mainExports.autoUpdater.checkForUpdates();
     if (!result) return { updateAvailable: false };
     return { updateAvailable: true, version: result.updateInfo.version };
+  });
+  require$$1$3.ipcMain.handle("download-update", () => {
+    mainExports.autoUpdater.downloadUpdate();
   });
   require$$1$3.ipcMain.handle("quit-and-install", () => {
     mainExports.autoUpdater.quitAndInstall();
@@ -15502,7 +15505,7 @@ function createWindow() {
     mainWindow.loadFile(require$$1$1.join(__dirname, "../dist/index.html"));
   }
   mainWindow.webContents.on("did-finish-load", () => {
-    mainExports.autoUpdater.checkForUpdatesAndNotify();
+    mainExports.autoUpdater.checkForUpdates();
   });
 }
 require$$1$3.app.whenReady().then(() => {
@@ -15515,8 +15518,11 @@ require$$1$3.app.on("window-all-closed", () => {
 require$$1$3.app.on("activate", () => {
   if (require$$1$3.BrowserWindow.getAllWindows().length === 0) createWindow();
 });
-mainExports.autoUpdater.on("update-available", () => {
-  mainWindow == null ? void 0 : mainWindow.webContents.send("update-status", { status: "available" });
+mainExports.autoUpdater.on("update-available", (info) => {
+  mainWindow == null ? void 0 : mainWindow.webContents.send("update-status", {
+    status: "available",
+    version: info.version
+  });
 });
 mainExports.autoUpdater.on("update-downloaded", () => {
   mainWindow == null ? void 0 : mainWindow.webContents.send("update-status", { status: "downloaded" });

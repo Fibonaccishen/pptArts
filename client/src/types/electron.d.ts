@@ -5,8 +5,9 @@ declare global {
     electronAPI?: {
       saveFile: (buffer: ArrayBuffer, suggestedName: string) => Promise<string | null>;
       checkForUpdates: () => Promise<{ updateAvailable: boolean; version?: string }>;
+      downloadUpdate: () => void;
       quitAndInstall: () => void;
-      onUpdateStatus: (callback: (status: { status: string }) => void) => void;
+      onUpdateStatus: (callback: (status: { status: string; version?: string }) => void) => void;
     };
   }
 }

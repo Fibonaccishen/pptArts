@@ -15,9 +15,13 @@ export function registerIpcHandlers() {
   });
 
   ipcMain.handle('check-for-updates', async () => {
-    const result = await autoUpdater.checkForUpdatesAndNotify();
+    const result = await autoUpdater.checkForUpdates();
     if (!result) return { updateAvailable: false };
     return { updateAvailable: true, version: result.updateInfo.version };
+  });
+
+  ipcMain.handle('download-update', () => {
+    autoUpdater.downloadUpdate();
   });
 
   ipcMain.handle('quit-and-install', () => {

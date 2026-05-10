@@ -18,12 +18,22 @@ export default function AppLayout() {
 
   useEffect(() => {
     if (!isElectron) return;
-    window.electronAPI!.onUpdateStatus(({ status }) => {
+    window.electronAPI!.onUpdateStatus(async ({ status, version }) => {
       if (status === 'available') {
-        message.info('发现新版本，正在下载...');
-      } else if (status === 'downloaded') {
         Modal.confirm({
-          title: '新版本已下载',
+          title: '发现新版本',
+          content: `PPTArts ${version} 已发布，是否下载更新？`,
+          okText: '立即下载',
+          cancelText: '暂不更新',
+          onOk: () => {
+            window.electronAPI!.downloadUpdate();
+            message.loading({ content: '正在下载更新...', key: 'update' });
+          },
+        });
+      } else if (status === 'downloaded') {
+        message.destroy('update');
+        Modal.confirm({
+          title: '更新已下载',
           content: '是否立即重启安装更新？',
           okText: '立即重启',
           cancelText: '稍后',
@@ -39,7 +49,7 @@ export default function AppLayout() {
     try {
       const result = await window.electronAPI!.checkForUpdates();
       if (result.updateAvailable) {
-        message.info(`发现新版本 ${result.version}，正在下载...`);
+        // update-available event will fire from main process
       } else {
         message.success('已是最新版本');
       }

@@ -5,10 +5,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('save-file', buffer, suggestedName),
   checkForUpdates: (): Promise<{ updateAvailable: boolean; version?: string }> =>
     ipcRenderer.invoke('check-for-updates'),
+  downloadUpdate: (): void => {
+    ipcRenderer.invoke('download-update');
+  },
   quitAndInstall: (): void => {
     ipcRenderer.invoke('quit-and-install');
   },
-  onUpdateStatus: (callback: (status: { status: string }) => void) => {
+  onUpdateStatus: (callback: (status: { status: string; version?: string }) => void) => {
     ipcRenderer.on('update-status', (_event, status) => callback(status));
   },
 });
