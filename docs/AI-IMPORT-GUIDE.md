@@ -77,6 +77,11 @@ HEADERS = {"Authorization": f"Bearer {TOKEN}"}
 
 组件的分类是**两级结构**，导入时必须指定一级和二级分类。
 
+分类逻辑从实际使用场景出发：
+
+- **基础元素**：独立小组件，拖到任意页面上丰富页面细节（箭头、图标、文字框、卡片等）
+- **结构模板**：完整页面布局，填入内容即成为一页 PPT（架构图、对比图、流程图等）
+
 ### 完整分类表
 
 | 一级分类 key | 一级名称 | 二级分类 key（取 `|` 后面的部分）| 二级名称 |
@@ -85,15 +90,16 @@ HEADERS = {"Authorization": f"Bearer {TOKEN}"}
 | | | `icons` | 图标库 |
 | | | `dividers` | 分割线&装饰 |
 | | | `transitions` | 过渡元素 |
-| `content-containers` | 内容容器 | `text-boxes` | 文字框 |
-| | | `infographics` | 信息图框 |
+| | | `text-boxes` | 文字框 |
 | | | `data-cards` | 数据卡片 |
 | | | `quotes-labels` | 引用框&标签 |
+| | | `others` | 其他 |
 | `structure-templates` | 结构模板 | `side-by-side` | 并列结构 |
 | | | `architecture` | 架构图 |
 | | | `comparison` | 对比图 |
 | | | `flow-timeline` | 流程图&时间轴 |
 | | | `pyramid-cycle-matrix` | 金字塔&循环&矩阵 |
+| | | `infographics` | 信息图 |
 
 ### 调用 API 时的参数
 
@@ -321,26 +327,30 @@ if __name__ == "__main__":
 def map_to_category(keywords: list[str]) -> tuple[str, str]:
     """根据关键词返回 (一级分类, 二级分类)"""
     rules = [
-        # (一级分类, 二级分类, 匹配关键词)
-        ("基础元素", "箭头", ["arrow", "箭头", "方向"]),
-        ("基础元素", "图标库", ["icon", "图标", "icon"]),
-        ("基础元素", "分割线&装饰", ["divider", "分割线", "装饰", "separator"]),
-        ("基础元素", "过渡元素", ["transition", "过渡", "切换"]),
-        ("内容容器", "文字框", ["text box", "文字框", "文本", "文本框"]),
-        ("内容容器", "信息图框", ["infographic", "信息图", "infographic"]),
-        ("内容容器", "数据卡片", ["card", "卡片", "数据", "data card"]),
-        ("内容容器", "引用框&标签", ["quote", "引用", "标签", "label"]),
-        ("结构模板", "并列结构", ["并列", "side by side", "对比"]),
-        ("结构模板", "架构图", ["架构", "architecture", "结构图"]),
-        ("结构模板", "对比图", ["comparison", "对比图", "vs"]),
-        ("结构模板", "流程图&时间轴", ["flowchart", "流程", "时间轴", "timeline"]),
+        # ===== 基础元素 =====
+        ("基础元素", "箭头", ["arrow", "箭头", "方向", "chevron"]),
+        ("基础元素", "图标库", ["icon", "图标"]),
+        ("基础元素", "分割线&装饰", ["divider", "分割线", "装饰", "separator", "分隔"]),
+        ("基础元素", "过渡元素", ["transition", "过渡", "切换", "loader", "spinner", "加载"]),
+        ("基础元素", "文字框", ["text box", "文字框", "文本", "文本框", "标题框", "title"]),
+        ("基础元素", "数据卡片", ["card", "卡片", "数据", "data card", "chart", "图表"]),
+        ("基础元素", "引用框&标签", ["quote", "引用", "标签", "label", "badge", "徽章", "bookmark"]),
+        ("基础元素", "其他", []),
+        # ===== 结构模板 =====
+        ("结构模板", "并列结构", ["并列", "side by side", "左右", "两栏", "三栏", "多栏"]),
+        ("结构模板", "架构图", ["架构", "architecture", "结构图", "组织"]),
+        ("结构模板", "对比图", ["comparison", "对比图", "vs", "对比"]),
+        ("结构模板", "流程图&时间轴", ["flowchart", "流程", "时间轴", "timeline", "步骤"]),
         ("结构模板", "金字塔&循环&矩阵", ["pyramid", "金字塔", "循环", "cycle", "矩阵", "matrix"]),
+        ("结构模板", "信息图", ["infographic", "信息图", "info"]),
     ]
     kw_lower = [k.lower() for k in keywords]
     for cat, subcat, match_words in rules:
+        if not match_words:  # "其他" 作为兜底
+            continue
         if any(m in kw_lower for m in match_words if m in " ".join(kw_lower)):
             return (cat, subcat)
-    # 默认
+    # 默认：基础元素/图标库
     return ("基础元素", "图标库")
 ```
 

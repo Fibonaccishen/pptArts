@@ -39,3 +39,6 @@ server/thumbnails/
 
 # LibreOffice lock files
 .~lock.*#
+
+# Downloaded PPT component files (local import staging)
+ppt-components-downloads/

@@ -10,16 +10,10 @@ const CATEGORY_TREE: CategoryNode[] = [
       { key: 'basic-elements|icons', title: '图标库' },
       { key: 'basic-elements|dividers', title: '分割线&装饰' },
       { key: 'basic-elements|transitions', title: '过渡元素' },
-    ],
-  },
-  {
-    key: 'content-containers',
-    title: '内容容器',
-    children: [
-      { key: 'content-containers|text-boxes', title: '文字框' },
-      { key: 'content-containers|infographics', title: '信息图框' },
-      { key: 'content-containers|data-cards', title: '数据卡片' },
-      { key: 'content-containers|quotes-labels', title: '引用框&标签' },
+      { key: 'basic-elements|text-boxes', title: '文字框' },
+      { key: 'basic-elements|data-cards', title: '数据卡片' },
+      { key: 'basic-elements|quotes-labels', title: '引用框&标签' },
+      { key: 'basic-elements|others', title: '其他' },
     ],
   },
   {
@@ -31,6 +25,7 @@ const CATEGORY_TREE: CategoryNode[] = [
       { key: 'structure-templates|comparison', title: '对比图' },
       { key: 'structure-templates|flow-timeline', title: '流程图&时间轴' },
       { key: 'structure-templates|pyramid-cycle-matrix', title: '金字塔&循环&矩阵' },
+      { key: 'structure-templates|infographics', title: '信息图' },
     ],
   },
 ];
@@ -43,16 +38,19 @@ export function getCategoryTree(): CategoryNode[] {
     GROUP BY category, subcategory
   `).all() as { category: string; subcategory: string; count: number }[];
 
-  const countMap = new Map<string, number>();
-  for (const row of counts) {
-    countMap.set(`${row.category}|${row.subcategory}`, row.count);
-  }
-
   return CATEGORY_TREE.map((cat) => ({
     ...cat,
-    children: cat.children?.map((child) => ({
-      ...child,
-      count: countMap.get(child.key) || 0,
-    })),
+    children: cat.children?.map((child) => {
+      let count = 0;
+      for (const row of counts) {
+        const rowKey = `${row.category}|${row.subcategory}`;
+        // 前端导入存英文 key，Python 脚本导入存中文名，两者都匹配
+        const chineseKey = `${cat.title}|${child.title}`;
+        if (rowKey === child.key || rowKey === chineseKey) {
+          count += row.count;
+        }
+      }
+      return { ...child, count };
+    }),
   }));
 }
