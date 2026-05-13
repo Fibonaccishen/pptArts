@@ -1,13 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Typography, App } from 'antd';
-import { UserOutlined, LockOutlined, RocketOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, RocketOutlined, GlobalOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../stores/useAuthStore';
 
 const { Title, Text } = Typography;
 
+function loadServerUrl(): string {
+  return localStorage.getItem('pptarts-server-url') || '';
+}
+
+function saveServerUrl(url: string) {
+  if (url) {
+    localStorage.setItem('pptarts-server-url', url);
+  } else {
+    localStorage.removeItem('pptarts-server-url');
+  }
+}
+
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const [serverUrl, setServerUrl] = useState(loadServerUrl);
   const { message } = App.useApp();
   const login = useAuthStore((s) => s.login);
   const navigate = useNavigate();
@@ -15,6 +28,7 @@ export default function LoginPage() {
   const onFinish = async (values: { username: string; password: string }) => {
     setLoading(true);
     try {
+      saveServerUrl(serverUrl.trim());
       await login(values.username, values.password);
       navigate('/', { replace: true });
     } catch (err: any) {
@@ -60,7 +74,18 @@ export default function LoginPage() {
           <Text style={{ color: '#999', fontSize: 14 }}>企业 PPT 组件库</Text>
         </div>
 
-        <Form name="login" onFinish={onFinish} size="large">
+        <Form name="login" onFinish={onFinish} size="large" initialValues={{ serverUrl: loadServerUrl() }}>
+          <Form.Item name="serverUrl"
+            help="本地使用可留空，远程使用请输入内网穿透地址"
+          >
+            <Input
+              prefix={<GlobalOutlined style={{ color: '#B5B5B5' }} />}
+              placeholder="服务器地址（如 https://ppt.company.com）"
+              value={serverUrl}
+              onChange={(e) => setServerUrl(e.target.value)}
+              allowClear
+            />
+          </Form.Item>
           <Form.Item name="username" rules={[{ required: true, message: '请输入用户名' }]}>
             <Input prefix={<UserOutlined style={{ color: '#B5B5B5' }} />} placeholder="用户名" />
           </Form.Item>
