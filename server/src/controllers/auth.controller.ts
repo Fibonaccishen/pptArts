@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as authService from '../services/auth.service.js';
 
-export function login(req: Request, res: Response, next: NextFunction) {
+export async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -10,7 +10,7 @@ export function login(req: Request, res: Response, next: NextFunction) {
       });
       return;
     }
-    const result = authService.login(username, password);
+    const result = await authService.login(username, password);
     res.json(result);
   } catch (err) {
     next(err);

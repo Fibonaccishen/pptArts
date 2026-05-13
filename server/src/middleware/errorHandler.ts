@@ -14,12 +14,9 @@ export class AppError extends Error {
 export function errorHandler(err: any, _req: Request, res: Response, _next: NextFunction) {
   const statusCode = err.statusCode || 500;
   const code = err.code || 'INTERNAL_ERROR';
-  const message = err.message || '服务器内部错误';
+  const message = statusCode === 500 ? '服务器内部错误' : (err.message || '服务器内部错误');
 
-  console.error(`[Error] ${statusCode} ${code}: ${message}`);
-  if (err.stack && statusCode === 500) {
-    console.error(err.stack);
-  }
+  console.error(`[Error] ${statusCode} ${code}: ${err.message || 'unknown'}`);
 
   res.status(statusCode).json({ error: { code, message } });
 }

@@ -1,8 +1,24 @@
 import { getDb } from '../db/connection.js';
+import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
 import { config } from '../config.js';
 import type { Component, ComponentListParams, PaginatedResponse, ImportComponentDto, UpdateComponentDto } from '../types/index.js';
+
+// 为组件缩略图生成 1 小时有效签名 token
+export function generateThumbnailToken(componentId: number): string {
+  return jwt.sign({ componentId }, config.jwtSecret, { expiresIn: '1h' });
+}
+
+// 验证缩略图 token，返回组件 ID
+export function verifyThumbnailToken(token: string): number {
+  try {
+    const payload = jwt.verify(token, config.jwtSecret) as { componentId: number };
+    return payload.componentId;
+  } catch {
+    throw Object.assign(new Error('缩略图链接已过期'), { statusCode: 401, code: 'UNAUTHORIZED' });
+  }
+}
 
 export function list(params: ComponentListParams): PaginatedResponse<Component> {
   const db = getDb();
@@ -34,9 +50,15 @@ export function list(params: ComponentListParams): PaginatedResponse<Component> 
   const countRow = db.prepare(`SELECT COUNT(*) as total FROM components ${where}`).get(...values) as { total: number };
   const total = countRow.total;
 
-  const data = db.prepare(
+  const rows = db.prepare(
     `SELECT * FROM components ${where} ORDER BY ${orderCol} LIMIT ? OFFSET ?`,
   ).all(...values, pageSize, offset) as Component[];
+
+  // 为有缩略图的组件附加签名 token
+  const data = rows.map((row) => ({
+    ...row,
+    thumbnail_token: row.thumbnail_path ? generateThumbnailToken(row.id) : undefined,
+  }));
 
   return { data, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
 }

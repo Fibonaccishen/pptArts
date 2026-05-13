@@ -146,7 +146,7 @@ Authorization: Bearer <token>
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `files` | File[] | ✅ | 一个或多个文件，最多 200 个，单文件 ≤ 50MB |
+| `files` | File[] | ✅ | 一个或多个文件，最多 20 个，单文件 ≤ 20MB |
 | `category` | string | ✅ | 一级分类英文 key，如 `"basic-elements"` |
 | `subcategory` | string | ✅ | 二级分类英文 key，如 `"arrows"` |
 | `name` | string | | 组件名称。不传则取文件名（去扩展名）。**注意：批量导入时所有文件共用此名称** |
@@ -407,7 +407,7 @@ def health_check() -> bool:
 |---|---|---|
 | `401 Unauthorized` | Token 过期 | 重新调用 login() |
 | `400 VALIDATION_ERROR` | 缺少 category 或 subcategory | 检查分类名是否与上表一致 |
-| `413 Payload Too Large` | 单文件超过 50MB | 压缩或分割文件 |
+| `413 Payload Too Large` | 单文件超过 20MB | 压缩或分割文件 |
 | 导入成功但缩略图不显示 | 缩略图生成失败 | 检查服务端是否安装 LibreOffice（仅 PPTX 需要）|
 | `requests.exceptions.Timeout` | 缩略图队列积压 | 减少 batch size，增加 timeout |
 

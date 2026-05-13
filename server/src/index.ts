@@ -7,7 +7,7 @@ import { createApp } from './app.js';
 import { initializeDatabase } from './db/schema.js';
 import { seed } from './db/seed.js';
 import { cleanupOrphanFiles } from './services/component.service.js';
-import { config } from './config.js';
+import { config, validateConfig } from './config.js';
 import fs from 'fs';
 
 function ensureDirectories() {
@@ -17,6 +17,19 @@ function ensureDirectories() {
 }
 
 function main() {
+  // 安全校验
+  const errors = validateConfig();
+  if (errors.length > 0) {
+    if (config.publicMode) {
+      console.error('[PPTArts] 安全配置错误，拒绝启动：');
+      errors.forEach((e) => console.error(`  - ${e}`));
+      process.exit(1);
+    } else {
+      console.warn('[PPTArts] 安全提示（内网穿透前必须修复）：');
+      errors.forEach((e) => console.warn(`  - ${e}`));
+    }
+  }
+
   ensureDirectories();
   initializeDatabase();
   seed();

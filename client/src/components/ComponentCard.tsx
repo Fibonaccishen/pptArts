@@ -11,6 +11,9 @@ interface Props {
 
 export default function ComponentCard({ component, onClick }: Props) {
   const hasThumbnail = component.thumbnail_path && component.thumbnail_path.length > 0;
+  const thumbnailSrc = hasThumbnail && component.thumbnail_token
+    ? `/api/components/thumbnail/${component.thumbnail_token}`
+    : null;
 
   return (
     <Card
@@ -26,9 +29,9 @@ export default function ComponentCard({ component, onClick }: Props) {
           background: '#fafafa',
           borderBottom: '1px solid #f0f0f0',
         }}>
-          {hasThumbnail ? (
+          {thumbnailSrc ? (
             <img
-              src={`/api/components/${component.id}/thumbnail`}
+              src={thumbnailSrc}
               alt={component.name}
               style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 12 }}
               loading="lazy"

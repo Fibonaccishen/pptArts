@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as componentService from '../services/component.service.js';
 import { generateThumbnail } from '../services/thumbnail.service.js';
+import { checkMagicBytes } from '../middleware/upload.js';
 import path from 'path';
 import fs from 'fs';
 
@@ -69,6 +70,22 @@ export function getThumbnail(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// 签名 URL 方式获取缩略图（无需 Authorization header）
+export function getThumbnailByToken(req: Request, res: Response, next: NextFunction) {
+  try {
+    const componentId = componentService.verifyThumbnailToken(req.params.token);
+    const comp = componentService.getById(componentId);
+    const absPath = path.resolve(comp.thumbnail_path);
+    if (!fs.existsSync(absPath)) {
+      res.status(404).json({ error: { code: 'NOT_FOUND', message: '缩略图不存在' } });
+      return;
+    }
+    res.sendFile(absPath);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function importComponents(req: Request, res: Response, next: NextFunction) {
   try {
     const files = req.files as Express.Multer.File[];
@@ -93,6 +110,11 @@ export async function importComponents(req: Request, res: Response, next: NextFu
       const fileType = ext === '.pptx' ? 'pptx' : ext === '.png' ? 'png' : 'svg';
       const componentName = name || path.basename(rawName, ext);
       try {
+        // 魔数校验，防止扩展名伪造
+        if (!checkMagicBytes(file.path, ext)) {
+          results.push({ id: 0, name: componentName, success: false, error: '文件内容与扩展名不匹配' });
+          continue;
+        }
         let thumbnailPath = '';
         try {
           const thumbnailName = await generateThumbnail(file.path, fileType);

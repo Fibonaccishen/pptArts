@@ -22,6 +22,9 @@ export default function PreviewModal({
   if (!component) return null;
 
   const hasThumbnail = component.thumbnail_path && component.thumbnail_path.length > 0;
+  const thumbnailSrc = hasThumbnail && component.thumbnail_token
+    ? `/api/components/thumbnail/${component.thumbnail_token}`
+    : null;
   const tags = component.tags
     ? component.tags.split(/[,，]+/).filter(Boolean).map((t) => t.trim())
     : [];
@@ -47,9 +50,9 @@ export default function PreviewModal({
           position: 'relative',
           border: '1px solid #EBEAE6',
         }}>
-          {hasThumbnail ? (
+          {thumbnailSrc ? (
             <img
-              src={`/api/components/${component.id}/thumbnail`}
+              src={thumbnailSrc}
               alt={component.name}
               style={{ maxWidth: '100%', maxHeight: 500, objectFit: 'contain' }}
             />

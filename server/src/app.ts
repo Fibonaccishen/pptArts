@@ -1,17 +1,42 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
 import path from 'path';
 import fs from 'fs';
 import authRoutes from './routes/auth.routes.js';
 import categoryRoutes from './routes/category.routes.js';
 import componentRoutes from './routes/component.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { config } from './config.js';
 
 export function createApp() {
   const app = express();
 
-  app.use(cors());
+  // 安全响应头（X-Content-Type-Options, X-Frame-Options 等）
+  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+
+  // CORS — 公网模式下仅允许指定域名
+  const corsOrigin = config.publicMode && config.corsOrigin
+    ? config.corsOrigin
+    : true; // 本地模式保持兼容
+  app.use(cors({ origin: corsOrigin, credentials: true }));
+
   app.use(express.json());
+
+  // 请求审计日志
+  app.use(morgan('short'));
+
+  // 全局 API 限流（每 IP 15 分钟最多 200 次）
+  const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 200,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: { code: 'RATE_LIMITED', message: '请求过于频繁，请稍后再试' } },
+  });
+  app.use('/api', globalLimiter);
 
   const updatesDir = path.resolve('./updates');
   if (!fs.existsSync(updatesDir)) {
