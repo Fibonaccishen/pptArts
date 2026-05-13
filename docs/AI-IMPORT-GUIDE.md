@@ -87,11 +87,13 @@ HEADERS = {"Authorization": f"Bearer {TOKEN}"}
 | 一级分类 key | 一级名称 | 二级分类 key（取 `|` 后面的部分）| 二级名称 |
 |---|---|---|---|
 | `basic-elements` | 基础元素 | `arrows` | 箭头 |
-| | | `icons` | 图标库 |
+| | | `characters` | 人物角色 |
+| | | `business` | 商务办公 |
+| | | `tech-digital` | 科技数字 |
+| | | `lifestyle` | 生活场景 |
 | | | `dividers` | 分割线&装饰 |
 | | | `transitions` | 过渡元素 |
 | | | `text-boxes` | 文字框 |
-| | | `data-cards` | 数据卡片 |
 | | | `quotes-labels` | 引用框&标签 |
 | | | `others` | 其他 |
 | `structure-templates` | 结构模板 | `side-by-side` | 并列结构 |
@@ -331,11 +333,13 @@ def map_to_category(keywords: list[str]) -> tuple[str, str]:
     rules = [
         # ===== 基础元素 =====
         ("basic-elements", "arrows", ["arrow", "箭头", "方向", "chevron"]),
-        ("basic-elements", "icons", ["icon", "图标"]),
+        ("basic-elements", "characters", ["person", "people", "人物", "角色", "architect", "analyst", "team", "worker"]),
+        ("basic-elements", "business", ["business", "商务", "办公", "presentation", "会议", "report", "project", "strategy"]),
+        ("basic-elements", "tech-digital", ["tech", "科技", "数字", "data", "chart", "server", "cloud", "code", "network"]),
+        ("basic-elements", "lifestyle", ["life", "生活", "city", "自然", "sport", "food", "travel", "场景"]),
         ("basic-elements", "dividers", ["divider", "分割线", "装饰", "separator", "分隔"]),
         ("basic-elements", "transitions", ["transition", "过渡", "切换", "loader", "spinner", "加载"]),
         ("basic-elements", "text-boxes", ["text box", "文字框", "文本", "文本框", "标题框", "title"]),
-        ("basic-elements", "data-cards", ["card", "卡片", "数据", "data card", "chart", "图表"]),
         ("basic-elements", "quotes-labels", ["quote", "引用", "标签", "label", "badge", "徽章", "bookmark"]),
         ("basic-elements", "others", []),
         # ===== 结构模板 =====
@@ -353,7 +357,7 @@ def map_to_category(keywords: list[str]) -> tuple[str, str]:
         if any(m in kw_lower for m in match_words if m in " ".join(kw_lower)):
             return (cat, subcat)
     # 默认
-    return ("basic-elements", "icons")
+    return ("basic-elements", "others")
 ```
 
 ---
