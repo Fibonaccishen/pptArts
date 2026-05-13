@@ -24,12 +24,13 @@ export default function ComponentCard({ component, onClick }: Props) {
           alignItems: 'center',
           justifyContent: 'center',
           background: '#fafafa',
+          borderBottom: '1px solid #f0f0f0',
         }}>
           {hasThumbnail ? (
             <img
               src={`/api/components/${component.id}/thumbnail`}
               alt={component.name}
-              style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 8 }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 12 }}
               loading="lazy"
             />
           ) : (

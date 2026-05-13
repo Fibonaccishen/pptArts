@@ -3,7 +3,7 @@ import { InboxOutlined } from '@ant-design/icons';
 import type { Component } from '../types/component';
 import ComponentCard from './ComponentCard';
 
-const CARD_WIDTH = 200;
+const CARD_WIDTH = 220;
 
 interface Props {
   items: Component[];
