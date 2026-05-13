@@ -119,7 +119,9 @@
       "Bash(git -C /Users/shenfangzhi/Desktop/vibe-coding/pptArts add server/src/services/category.service.ts docs/AI-IMPORT-GUIDE.md docs/PRD-V2.md)",
       "Bash(python3 /tmp/import_4styles.py)",
       "Bash(git -C /Users/shenfangzhi/Desktop/vibe-coding/pptArts -c user.name=\"sfz\" -c user.email=\"shenfangzhi@MacBook-Pro-50.local\" add -A)",
-      "Bash(git -C /Users/shenfangzhi/Desktop/vibe-coding/pptArts -c user.name=sfz -c user.email=shenfangzhi@MacBook-Pro-50.local commit -m 'Feat: add samples from 4 more Manypixels styles \\(flatline, isometric, monochromatic, outline\\) *)"
+      "Bash(git -C /Users/shenfangzhi/Desktop/vibe-coding/pptArts -c user.name=sfz -c user.email=shenfangzhi@MacBook-Pro-50.local commit -m 'Feat: add samples from 4 more Manypixels styles \\(flatline, isometric, monochromatic, outline\\) *)",
+      "Bash(python3 /tmp/import_monochromatic.py)",
+      "Bash(git -C /Users/shenfangzhi/Desktop/vibe-coding/pptArts -c user.name=\"sfz\" -c user.email=\"shenfangzhi@MacBook-Pro-50.local\" commit -m \"Feat: import all 577 monochromatic Manypixels illustrations\")"
     ],
     "additionalDirectories": [
       "/Users/shenfangzhi/Desktop/vibe-coding/pptArts",
