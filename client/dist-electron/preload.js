@@ -1,7 +1,7 @@
 "use strict";
 const electron = require("electron");
 electron.contextBridge.exposeInMainWorld("electronAPI", {
-  saveFile: (buffer, suggestedName) => electron.ipcRenderer.invoke("save-file", buffer, suggestedName),
+  saveFile: (buffer, suggestedName, fileType) => electron.ipcRenderer.invoke("save-file", buffer, suggestedName, fileType),
   checkForUpdates: () => electron.ipcRenderer.invoke("check-for-updates"),
   downloadUpdate: () => {
     electron.ipcRenderer.invoke("download-update");

@@ -15444,11 +15444,23 @@ function requireMain() {
 }
 var mainExports = requireMain();
 function registerIpcHandlers() {
-  require$$1$3.ipcMain.handle("save-file", async (_, buffer, suggestedName) => {
+  require$$1$3.ipcMain.handle("save-file", async (_, buffer, suggestedName, fileType) => {
+    const ft = fileType || "pptx";
+    const filters = [
+      { name: "PPTX", extensions: ["pptx"] },
+      { name: "PNG 图片", extensions: ["png"] },
+      { name: "SVG 矢量图", extensions: ["svg"] },
+      { name: "所有文件", extensions: ["*"] }
+    ];
+    const idx = filters.findIndex((f) => f.name === (ft === "pptx" ? "PPTX" : ft === "png" ? "PNG 图片" : "SVG 矢量图"));
+    if (idx > 0) {
+      const [match] = filters.splice(idx, 1);
+      filters.unshift(match);
+    }
     const { canceled, filePath } = await require$$1$3.dialog.showSaveDialog({
-      title: "保存 PPTX 文件",
+      title: "保存文件",
       defaultPath: suggestedName,
-      filters: [{ name: "PowerPoint", extensions: ["pptx"] }]
+      filters
     });
     if (canceled || !filePath) return null;
     require$$1.writeFileSync(filePath, Buffer.from(buffer));
