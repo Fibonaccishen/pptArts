@@ -103,12 +103,14 @@ HEADERS = {"Authorization": f"Bearer {TOKEN}"}
 
 ### 调用 API 时的参数
 
-导入时传的是**分类的中文名称**（不是 key）：
+导入时传的是**分类的英文 key**（与前端侧边栏一致）：
 
 ```python
-category = "基础元素"       # 一级名称
-subcategory = "图标库"       # 二级名称
+category = "basic-elements"        # 一级 key
+subcategory = "arrows"             # 二级 key
 ```
+
+> `category` 和 `subcategory` 的值必须使用上表中的英文 key，不能使用中文名称。前端浏览时通过英文 key 过滤组件，传中文名会导致组件无法在侧边栏中显示。
 
 ---
 
@@ -143,8 +145,8 @@ Authorization: Bearer <token>
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
 | `files` | File[] | ✅ | 一个或多个文件，最多 200 个，单文件 ≤ 50MB |
-| `category` | string | ✅ | 一级分类中文名，如 `"基础元素"` |
-| `subcategory` | string | ✅ | 二级分类中文名，如 `"图标库"` |
+| `category` | string | ✅ | 一级分类英文 key，如 `"basic-elements"` |
+| `subcategory` | string | ✅ | 二级分类英文 key，如 `"arrows"` |
 | `name` | string | | 组件名称。不传则取文件名（去扩展名）。**注意：批量导入时所有文件共用此名称** |
 | `tags` | string | | 逗号分隔的中文标签，如 `"蓝色,简约,图标"` |
 
@@ -264,20 +266,20 @@ def main():
     batches = [
         {
             "dir": Path("./downloads/arrows"),
-            "category": "基础元素",
-            "subcategory": "箭头",
+            "category": "basic-elements",
+            "subcategory": "arrows",
             "tags": "箭头,蓝色,简约",
         },
         {
             "dir": Path("./downloads/icons"),
-            "category": "基础元素",
-            "subcategory": "图标库",
+            "category": "basic-elements",
+            "subcategory": "icons",
             "tags": "图标,扁平",
         },
         {
             "dir": Path("./downloads/flowcharts"),
-            "category": "结构模板",
-            "subcategory": "流程图&时间轴",
+            "category": "structure-templates",
+            "subcategory": "flow-timeline",
             "tags": "流程图,商务",
         },
     ]
@@ -328,30 +330,30 @@ def map_to_category(keywords: list[str]) -> tuple[str, str]:
     """根据关键词返回 (一级分类, 二级分类)"""
     rules = [
         # ===== 基础元素 =====
-        ("基础元素", "箭头", ["arrow", "箭头", "方向", "chevron"]),
-        ("基础元素", "图标库", ["icon", "图标"]),
-        ("基础元素", "分割线&装饰", ["divider", "分割线", "装饰", "separator", "分隔"]),
-        ("基础元素", "过渡元素", ["transition", "过渡", "切换", "loader", "spinner", "加载"]),
-        ("基础元素", "文字框", ["text box", "文字框", "文本", "文本框", "标题框", "title"]),
-        ("基础元素", "数据卡片", ["card", "卡片", "数据", "data card", "chart", "图表"]),
-        ("基础元素", "引用框&标签", ["quote", "引用", "标签", "label", "badge", "徽章", "bookmark"]),
-        ("基础元素", "其他", []),
+        ("basic-elements", "arrows", ["arrow", "箭头", "方向", "chevron"]),
+        ("basic-elements", "icons", ["icon", "图标"]),
+        ("basic-elements", "dividers", ["divider", "分割线", "装饰", "separator", "分隔"]),
+        ("basic-elements", "transitions", ["transition", "过渡", "切换", "loader", "spinner", "加载"]),
+        ("basic-elements", "text-boxes", ["text box", "文字框", "文本", "文本框", "标题框", "title"]),
+        ("basic-elements", "data-cards", ["card", "卡片", "数据", "data card", "chart", "图表"]),
+        ("basic-elements", "quotes-labels", ["quote", "引用", "标签", "label", "badge", "徽章", "bookmark"]),
+        ("basic-elements", "others", []),
         # ===== 结构模板 =====
-        ("结构模板", "并列结构", ["并列", "side by side", "左右", "两栏", "三栏", "多栏"]),
-        ("结构模板", "架构图", ["架构", "architecture", "结构图", "组织"]),
-        ("结构模板", "对比图", ["comparison", "对比图", "vs", "对比"]),
-        ("结构模板", "流程图&时间轴", ["flowchart", "流程", "时间轴", "timeline", "步骤"]),
-        ("结构模板", "金字塔&循环&矩阵", ["pyramid", "金字塔", "循环", "cycle", "矩阵", "matrix"]),
-        ("结构模板", "信息图", ["infographic", "信息图", "info"]),
+        ("structure-templates", "side-by-side", ["并列", "side by side", "左右", "两栏", "三栏", "多栏"]),
+        ("structure-templates", "architecture", ["架构", "architecture", "结构图", "组织"]),
+        ("structure-templates", "comparison", ["comparison", "对比图", "vs", "对比"]),
+        ("structure-templates", "flow-timeline", ["flowchart", "流程", "时间轴", "timeline", "步骤"]),
+        ("structure-templates", "pyramid-cycle-matrix", ["pyramid", "金字塔", "循环", "cycle", "矩阵", "matrix"]),
+        ("structure-templates", "infographics", ["infographic", "信息图", "info"]),
     ]
     kw_lower = [k.lower() for k in keywords]
     for cat, subcat, match_words in rules:
-        if not match_words:  # "其他" 作为兜底
+        if not match_words:  # "others" 作为兜底
             continue
         if any(m in kw_lower for m in match_words if m in " ".join(kw_lower)):
             return (cat, subcat)
-    # 默认：基础元素/图标库
-    return ("基础元素", "图标库")
+    # 默认
+    return ("basic-elements", "icons")
 ```
 
 ---

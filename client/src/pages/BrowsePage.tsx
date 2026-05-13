@@ -19,8 +19,10 @@ export default function BrowsePage() {
   const [sort, setSort] = useState<'name' | 'download_count'>('name');
 
   useEffect(() => {
-    fetchList({ page, pageSize, sort });
-  }, [page, pageSize, sort]);
+    const category = selectedKey?.split('|')[0];
+    const subcategory = selectedKey?.split('|')[1];
+    fetchList({ category, subcategory, page, pageSize, sort });
+  }, [selectedKey, page, pageSize, sort]);
 
   const categoryInfo = useMemo(() => {
     if (!selectedKey) return { icon: <AppstoreOutlined />, parts: ['全部组件'] };
