@@ -99,9 +99,9 @@ export default function ComponentTable({
       dataIndex: 'id',
       width: 90,
       render: (_: number, record: Component) =>
-        record.thumbnail_path ? (
+        record.thumbnail_path && record.thumbnail_token ? (
           <img
-            src={`/api/components/${record.id}/thumbnail`}
+            src={`/api/components/thumbnail/${record.thumbnail_token}`}
             alt=""
             style={{ width: 60, height: 45, objectFit: 'contain', borderRadius: 4, padding: 2, background: '#FAFAF8' }}
           />
