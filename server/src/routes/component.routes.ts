@@ -26,7 +26,7 @@ const mutationLimiter = rateLimit({
 });
 const importLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 30,
+  max: 60,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: { code: 'RATE_LIMITED', message: '导入过于频繁，请稍后再试' } },
