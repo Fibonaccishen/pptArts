@@ -2,6 +2,7 @@
   "name": "pptarts",
   "version": "1.0.0",
   "private": true,
+  "main": "client/dist-electron/main.js",
   "description": "PPTArts - 企业 PPT 组件库桌面应用",
   "workspaces": [
     "server",
