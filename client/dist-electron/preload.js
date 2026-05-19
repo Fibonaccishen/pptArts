@@ -1,15 +1,1 @@
-"use strict";
-const electron = require("electron");
-electron.contextBridge.exposeInMainWorld("electronAPI", {
-  saveFile: (buffer, suggestedName, fileType) => electron.ipcRenderer.invoke("save-file", buffer, suggestedName, fileType),
-  checkForUpdates: () => electron.ipcRenderer.invoke("check-for-updates"),
-  downloadUpdate: () => {
-    electron.ipcRenderer.invoke("download-update");
-  },
-  quitAndInstall: () => {
-    electron.ipcRenderer.invoke("quit-and-install");
-  },
-  onUpdateStatus: (callback) => {
-    electron.ipcRenderer.on("update-status", (_event, status) => callback(status));
-  }
-});
+"use strict";const e=require("electron");e.contextBridge.exposeInMainWorld("electronAPI",{saveFile:(n,d,t)=>e.ipcRenderer.invoke("save-file",n,d,t),checkForUpdates:()=>e.ipcRenderer.invoke("check-for-updates"),downloadUpdate:()=>{e.ipcRenderer.invoke("download-update")},quitAndInstall:()=>{e.ipcRenderer.invoke("quit-and-install")},onUpdateStatus:n=>{e.ipcRenderer.on("update-status",(d,t)=>n(t))}});
