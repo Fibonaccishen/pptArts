@@ -13,6 +13,9 @@ import { config } from './config.js';
 export function createApp() {
   const app = express();
 
+  // 信任 Tailscale Funnel 等反向代理的 X-Forwarded-For 头
+  app.set('trust proxy', 1);
+
   // 安全响应头（X-Content-Type-Options, X-Frame-Options 等）
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
