@@ -44,6 +44,15 @@ export function createApp() {
   app.use('/api/categories', categoryRoutes);
   app.use('/api/components', componentRoutes);
 
+  // 托管前端静态文件（网页版入口）
+  const distDir = path.resolve(__dirname, '../../client/dist');
+  if (fs.existsSync(distDir)) {
+    app.use(express.static(distDir));
+    app.get('*', (_req, res) => {
+      res.sendFile(path.join(distDir, 'index.html'));
+    });
+  }
+
   app.use(errorHandler);
 
   return app;
