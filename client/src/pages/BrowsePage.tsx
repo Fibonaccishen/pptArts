@@ -57,7 +57,7 @@ export default function BrowsePage() {
 
   return (
     <div>
-      <div style={{
+      <div className="browse-header" style={{
         display: 'flex',
         alignItems: 'center',
         gap: 10,

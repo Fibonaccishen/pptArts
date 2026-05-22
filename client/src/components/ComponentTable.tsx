@@ -116,12 +116,13 @@ export default function ComponentTable({
       render: (type: string) => <FileTypeBadge type={type} />,
     },
     { title: '组件名称', dataIndex: 'name', ellipsis: true },
-    { title: '一级分类', dataIndex: 'category', width: 120 },
-    { title: '二级分类', dataIndex: 'subcategory', width: 140 },
+    { title: '一级分类', dataIndex: 'category', width: 120, className: 'hide-on-mobile' },
+    { title: '二级分类', dataIndex: 'subcategory', width: 140, className: 'hide-on-mobile' },
     {
       title: '标签',
       dataIndex: 'tags',
       width: 200,
+      className: 'hide-on-mobile',
       render: (tags: string) =>
         tags
           ? tags.split(/[,，]+/).filter(Boolean).map((t) => (

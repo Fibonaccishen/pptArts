@@ -31,6 +31,7 @@ export default function SearchBar() {
       onSearch={onSearch}
       allowClear
       style={{ maxWidth: 360 }}
+      className="search-bar"
     />
   );
 }

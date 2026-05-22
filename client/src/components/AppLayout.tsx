@@ -117,6 +117,16 @@ export default function AppLayout() {
           <SearchBar />
           <div style={{ flex: 1 }} />
           {isElectron && (
+            <Button icon={<SyncOutlined spin={checkingUpdate} />} onClick={handleCheckUpdate} type="text" className="hide-on-mobile">
+              检查更新
+            </Button>
+          )}
+          <Text type="secondary" className="header-username">{user?.username}</Text>
+          <Button icon={<LogoutOutlined />} onClick={logout} type="text">
+            <span className="hide-on-mobile">退出</span>
+          </Button>
+          <div style={{ flex: 1 }} />
+          {isElectron && (
             <Button icon={<SyncOutlined spin={checkingUpdate} />} onClick={handleCheckUpdate} type="text">
               检查更新
             </Button>
