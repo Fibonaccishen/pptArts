@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Layout, Typography, Button, Modal, App } from 'antd';
-import { LogoutOutlined, SyncOutlined, RocketOutlined } from '@ant-design/icons';
+import { LogoutOutlined, SyncOutlined, RocketOutlined, MenuOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../stores/useAuthStore';
 import Sidebar from './Sidebar';
 import SearchBar from './SearchBar';
@@ -13,6 +13,7 @@ export default function AppLayout() {
   const { user, logout } = useAuthStore();
   const { message } = App.useApp();
   const [checkingUpdate, setCheckingUpdate] = useState(false);
+  const [siderCollapsed, setSiderCollapsed] = useState(false);
 
   const isElectron = !!window.electronAPI;
 
@@ -62,11 +63,15 @@ export default function AppLayout() {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider width={220} style={{
-        background: '#FAFAF8',
-        borderRight: '1px solid #EBEAE6',
-        overflow: 'auto',
-      }}>
+      <Sider width={220} breakpoint="lg" collapsible collapsed={siderCollapsed}
+        onCollapse={(c) => setSiderCollapsed(c)} collapsedWidth={0}
+        style={{
+          background: '#FAFAF8',
+          borderRight: '1px solid #EBEAE6',
+          overflow: 'auto',
+        }}
+        trigger={null}
+      >
         <div style={{
           height: 64,
           display: 'flex',
@@ -98,12 +103,17 @@ export default function AppLayout() {
           boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
           display: 'flex',
           alignItems: 'center',
-          padding: '0 24px',
-          gap: 16,
+          padding: '0 16px',
+          gap: 8,
           position: 'sticky',
           top: 0,
           zIndex: 10,
         }}>
+          <Button type="text" icon={<MenuOutlined />}
+            onClick={() => setSiderCollapsed(!siderCollapsed)}
+            style={{ display: 'none' }}
+            className="mobile-menu-btn"
+          />
           <SearchBar />
           <div style={{ flex: 1 }} />
           {isElectron && (

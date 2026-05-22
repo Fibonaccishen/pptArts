@@ -47,7 +47,9 @@ export default function LoginPage() {
       background: 'linear-gradient(160deg, #F0EDE5 0%, #F7F6F3 40%, #EDF0E8 100%)',
     }}>
       <div style={{
-        width: 400,
+        width: '100%',
+        maxWidth: 400,
+        margin: '0 16px',
         background: '#FFFFFF',
         borderRadius: 16,
         padding: '48px 40px 40px',

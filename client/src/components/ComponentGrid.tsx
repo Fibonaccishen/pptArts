@@ -3,8 +3,6 @@ import { InboxOutlined } from '@ant-design/icons';
 import type { Component } from '../types/component';
 import ComponentCard from './ComponentCard';
 
-const CARD_WIDTH = 220;
-
 interface Props {
   items: Component[];
   loading: boolean;
@@ -32,18 +30,13 @@ export default function ComponentGrid({ items, loading, onCardClick, emptyText }
   }
 
   return (
-    <div style={{
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: 16,
-    }}>
+    <div className="responsive-grid">
       {items.map((comp, index) => (
-        <div key={comp.id} style={{ width: CARD_WIDTH }}>
-          <ComponentCard
-            component={comp}
-            onClick={() => onCardClick(comp, index)}
-          />
-        </div>
+        <ComponentCard
+          key={comp.id}
+          component={comp}
+          onClick={() => onCardClick(comp, index)}
+        />
       ))}
     </div>
   );

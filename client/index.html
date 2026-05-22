@@ -4,6 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PPTArts</title>
+    <style>
+      @media (max-width: 992px) {
+        .mobile-menu-btn { display: inline-flex !important; }
+        .ant-layout-content { padding: 12px !important; }
+        .ant-card-cover > div { aspect-ratio: 3/2 !important; }
+      }
+      .responsive-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+      }
+      @media (min-width: 600px) {
+        .responsive-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+      }
+      @media (min-width: 992px) {
+        .responsive-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
