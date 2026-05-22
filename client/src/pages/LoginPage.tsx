@@ -6,8 +6,14 @@ import { useAuthStore } from '../stores/useAuthStore';
 
 const { Title, Text } = Typography;
 
+const isElectron = !!(window as any).electronAPI;
+const DEFAULT_LOCAL = 'http://localhost:3001';
+
 function loadServerUrl(): string {
-  return localStorage.getItem('pptarts-server-url') || '';
+  const stored = localStorage.getItem('pptarts-server-url');
+  if (stored) return stored;
+  // Electron 默认连本机，浏览器默认走相对路径
+  return isElectron ? DEFAULT_LOCAL : '';
 }
 
 function saveServerUrl(url: string) {
@@ -78,7 +84,7 @@ export default function LoginPage() {
 
         <Form name="login" onFinish={onFinish} size="large" initialValues={{ serverUrl: loadServerUrl() }}>
           <Form.Item name="serverUrl"
-            help="本地使用可留空，远程使用请输入内网穿透地址"
+            help={isElectron ? '默认连接本机 localhost，远程使用请改为隧道地址' : '网页版自动识别，无需填写'}
           >
             <Input
               prefix={<GlobalOutlined style={{ color: '#B5B5B5' }} />}
