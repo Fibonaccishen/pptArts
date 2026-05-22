@@ -63,7 +63,7 @@ export default function AppLayout() {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider width={220} breakpoint="lg" collapsible collapsed={siderCollapsed}
+      <Sider width={180} breakpoint="lg" collapsible collapsed={siderCollapsed}
         onCollapse={(c) => setSiderCollapsed(c)} collapsedWidth={0}
         style={{
           background: '#FAFAF8',

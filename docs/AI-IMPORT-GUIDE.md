@@ -94,13 +94,16 @@ HEADERS = {"Authorization": f"Bearer {TOKEN}"}
 | | | `dividers` | 分割线&装饰 |
 | | | `transitions` | 过渡元素 |
 | | | `text-boxes` | 文字框 |
-| | | `quotes-labels` | 引用框&标签 |
+| | | `quotes` | 引用框 |
+| | | `labels` | 标签 |
 | | | `others` | 其他 |
 | `structure-templates` | 结构模板 | `side-by-side` | 并列结构 |
 | | | `architecture` | 架构图 |
 | | | `comparison` | 对比图 |
 | | | `flow-timeline` | 流程图&时间轴 |
-| | | `pyramid-cycle-matrix` | 金字塔&循环&矩阵 |
+| | | `pyramid` | 金字塔 |
+| | | `cycle` | 循环 |
+| | | `matrix` | 矩阵 |
 | | | `infographics` | 信息图 |
 
 ### 调用 API 时的参数
@@ -340,14 +343,17 @@ def map_to_category(keywords: list[str]) -> tuple[str, str]:
         ("basic-elements", "dividers", ["divider", "分割线", "装饰", "separator", "分隔"]),
         ("basic-elements", "transitions", ["transition", "过渡", "切换", "loader", "spinner", "加载"]),
         ("basic-elements", "text-boxes", ["text box", "文字框", "文本", "文本框", "标题框", "title"]),
-        ("basic-elements", "quotes-labels", ["quote", "引用", "标签", "label", "badge", "徽章", "bookmark"]),
+        ("basic-elements", "quotes", ["quote", "引用框", "引用"]),
+        ("basic-elements", "labels", ["label", "badge", "标签", "徽章", "bookmark"]),
         ("basic-elements", "others", []),
         # ===== 结构模板 =====
         ("structure-templates", "side-by-side", ["并列", "side by side", "左右", "两栏", "三栏", "多栏"]),
         ("structure-templates", "architecture", ["架构", "architecture", "结构图", "组织"]),
         ("structure-templates", "comparison", ["comparison", "对比图", "vs", "对比"]),
         ("structure-templates", "flow-timeline", ["flowchart", "流程", "时间轴", "timeline", "步骤"]),
-        ("structure-templates", "pyramid-cycle-matrix", ["pyramid", "金字塔", "循环", "cycle", "矩阵", "matrix"]),
+        ("structure-templates", "pyramid", ["pyramid", "金字塔"]),
+        ("structure-templates", "cycle", ["循环", "cycle"]),
+        ("structure-templates", "matrix", ["矩阵", "matrix"]),
         ("structure-templates", "infographics", ["infographic", "信息图", "info"]),
     ]
     kw_lower = [k.lower() for k in keywords]
