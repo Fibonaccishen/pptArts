@@ -1,10 +1,15 @@
 import axios from 'axios';
 
 function getBaseURL(): string {
-  const serverUrl = localStorage.getItem('pptarts-server-url');
-  if (serverUrl) {
-    return serverUrl.replace(/\/+$/, '') + '/api';
+  // Electron 需要完整服务端地址（本地 file:// 协议无法走相对路径）
+  const isElectron = !!(window as any).electronAPI;
+  if (isElectron) {
+    const serverUrl = localStorage.getItem('pptarts-server-url');
+    if (serverUrl) {
+      return serverUrl.replace(/\/+$/, '') + '/api';
+    }
   }
+  // 网页版（Vite 代理 + 生产同源部署）用相对路径即可
   return '/api';
 }
 
