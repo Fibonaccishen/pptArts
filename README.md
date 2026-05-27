@@ -1,10 +1,14 @@
+<p align="right">
+  <b>English</b> | <a href="README_CN.md">中文</a>
+</p>
+
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=32&duration=2000&pause=1000&color=5A9E6F&center=true&vCenter=true&width=600&lines=PPTArts+%F0%9F%8E%A8;%E4%BC%81%E4%B8%9A+PPT+%E7%BB%84%E4%BB%B6%E5%BA%93">
-  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=32&duration=2000&pause=1000&color=4A7C59&center=true&vCenter=true&width=600&lines=PPTArts+%F0%9F%8E%A8;%E4%BC%81%E4%B8%9A+PPT+%E7%BB%84%E4%BB%B6%E5%BA%93">
+  <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=32&duration=2000&pause=1000&color=5A9E6F&center=true&vCenter=true&width=600&lines=PPTArts+%F0%9F%8E%A8;Enterprise+PPT+Component+Library">
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=32&duration=2000&pause=1000&color=4A7C59&center=true&vCenter=true&width=600&lines=PPTArts+%F0%9F%8E%A8;Enterprise+PPT+Component+Library">
 </picture>
 
 <p align="center">
-  <b>告别枯燥的白板幻灯片</b> · 积木式搭建 · 开箱即用 · 团队共享
+  <b>Stop drawing from scratch</b> · Lego-style building · Ready to use · Team sharing
 </p>
 
 <p align="center">
@@ -18,34 +22,34 @@
 
 ---
 
-## 这是什么
+## What is this
 
-写 PPT 最痛苦的不是没想法，而是有想法但缺素材。你脑子里有个流程图，打开 PowerPoint 却要从空白矩形画起。PPTArts 就是一个**企业内部的 PPT 组件库**——把你收藏的所有箭头、图标、插画、数据卡片、结构模板都装进去，分类、标签、搜索，拖出来就用。
+The most painful part of making a PowerPoint isn't the lack of ideas — it's having the idea but zero assets. You've got a flowchart in your head, but PowerPoint wants you to draw it from raw rectangles. PPTArts is an **internal company PPT component library** — store all your arrows, icons, illustrations, data cards, and structure templates in one place. Browse by category, search by tag, drag into your slides.
 
-> 🎯 核心理念：写 PPT 应该像搭乐高，而不是从捏塑料开始。
+> 🎯 One line: Making slides should feel like LEGO, not like molding plastic from scratch.
 
 ---
 
-## ✨ 能干什么
+## ✨ Features
 
 <table>
-<tr><td>🗂️ <b>两级分类导航</b></td><td>基础元素（11类）＋ 结构模板（8类），左侧树形菜单一键筛选</td></tr>
-<tr><td>🔍 <b>跨分类搜索</b></td><td>搜名称、搜标签，300ms 防抖不卡顿</td></tr>
-<tr><td>🖼️ <b>自动生成缩略图</b></td><td>导入 PPTX / PNG / SVG，服务端自动渲染预览图</td></tr>
-<tr><td>⬆️ <b>批量导入</b></td><td>拖拽导入，REST API 批量上传，多文件并发处理</td></tr>
-<tr><td>📥 <b>一键下载</b></td><td>下载原始 PPTX 文件直接插入你的 PPT</td></tr>
-<tr><td>🏷️ <b>标签系统</b></td><td>颜色、风格、用途三维标签，跨分类检索</td></tr>
-<tr><td>📊 <b>下载量统计</b></td><td>热门组件自动排序，团队最爱一目了然</td></tr>
-<tr><td>🌐 <b>网页版 + 桌面版</b></td><td>浏览器直接访问 or 下载 Windows EXE，同一套代码</td></tr>
-<tr><td>🔐 <b>JWT 认证</b></td><td>Token 7天有效，登录限流防暴力破解</td></tr>
-<tr><td>🛡️ <b>安全加固</b></td><td>Helmet / CORS / 魔数校验 / 缩略图签名 URL / 审计日志</td></tr>
-<tr><td>🔌 <b>内网穿透</b></td><td>Tailscale Funnel 一键暴露公网，团队随时随地访问</td></tr>
-<tr><td>📱 <b>移动端适配</b></td><td>响应式布局，手机浏览器也能浏览和搜索</td></tr>
+<tr><td>🗂️ <b>2-Level Category Tree</b></td><td>11 basic element types + 8 structure templates, tree navigation with live counts</td></tr>
+<tr><td>🔍 <b>Cross-Category Search</b></td><td>Search by name or tags, 300ms debounce</td></tr>
+<tr><td>🖼️ <b>Auto Thumbnails</b></td><td>Import PPTX / PNG / SVG — server generates previews automatically</td></tr>
+<tr><td>⬆️ <b>Batch Import</b></td><td>Drag & drop, REST API bulk upload with concurrent processing</td></tr>
+<tr><td>📥 <b>One-Click Download</b></td><td>Download original PPTX files straight into your deck</td></tr>
+<tr><td>🏷️ <b>Tag System</b></td><td>Color, style, purpose — three dimensions, cross-category filtering</td></tr>
+<tr><td>📊 <b>Download Stats</b></td><td>Hot components auto-sorted, instantly see what the team loves</td></tr>
+<tr><td>🌐 <b>Web + Desktop</b></td><td>Browser access or Windows EXE — same codebase, two entry points</td></tr>
+<tr><td>🔐 <b>JWT Auth</b></td><td>7-day tokens, rate-limited login to prevent brute force</td></tr>
+<tr><td>🛡️ <b>Security Hardened</b></td><td>Helmet / CORS / magic byte validation / signed thumbnail URLs / audit logs</td></tr>
+<tr><td>🔌 <b>Intranet Penetration</b></td><td>Tailscale Funnel for instant HTTPS, team access from anywhere</td></tr>
+<tr><td>📱 <b>Mobile Responsive</b></td><td>Flexible layout — browse and search on your phone browser too</td></tr>
 </table>
 
 ---
 
-## 🏗️ 架构一览
+## 🏗️ Architecture
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -53,7 +57,7 @@
 │                                                   │
 │  ┌──────────┐   ┌──────────┐   ┌──────────────┐ │
 │  │ Browser  │   │ Electron │   │  Python CLI  │ │
-│  │ (网页版)  │   │  (EXE)  │   │  (批量导入)   │ │
+│  │  (Web)   │   │  (EXE)   │   │  (Importer)  │ │
 │  └────┬─────┘   └────┬─────┘   └──────┬───────┘ │
 │       │              │                 │          │
 │       └──────────────┼─────────────────┘          │
@@ -67,24 +71,24 @@
 │          ┌───────────┼───────────┐                │
 │     ┌────┴────┐ ┌────┴────┐ ┌───┴────┐          │
 │     │ SQLite  │ │ Sharp   │ │ Libre   │          │
-│     │  (数据)  │ │ (缩略图) │ │ Office  │          │
-│     └─────────┘ └─────────┘ └────────┘           │
+│     │ (Data)  │ │(Thumbs) │ │ Office  │          │
+│     └─────────┘ └─────────┘ └─────────┘          │
 └──────────────────────────────────────────────────┘
 ```
 
-| 层 | 技术 | 说明 |
+| Layer | Stack | Notes |
 |---|---|---|
-| 🖥️ 前端 | React 19 + Ant Design 5 + Zustand | 响应式 UI，CSS Grid 卡片布局 |
-| 🔧 后端 | Express 4 + TypeScript + SQLite | RESTful API，Better-SQLite3 同步高性能 |
-| 📦 桌面 | Electron 34 + Vite | 打包 Windows EXE，自动更新 |
-| 🐍 工具 | Python 3 (标准库) | 批量导入脚本，无需 pip install |
-| 🌐 穿透 | Tailscale Funnel | 免费 HTTPS 公网访问 |
+| 🖥️ Frontend | React 19 + Ant Design 5 + Zustand | Responsive UI, CSS Grid card layout |
+| 🔧 Backend | Express 4 + TypeScript + SQLite | RESTful API, Better-SQLite3 sync perf |
+| 📦 Desktop | Electron 34 + Vite | Windows EXE packaging, auto-updater |
+| 🐍 Tools | Python 3 (stdlib only) | Bulk import script, zero pip deps |
+| 🌐 Tunnel | Tailscale Funnel | Free HTTPS public access |
 
 ---
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 1. 克隆安装
+### 1. Clone & Install
 
 ```bash
 git clone https://github.com/Fibonaccishen/pptArts.git
@@ -92,137 +96,139 @@ cd pptArts
 npm install
 ```
 
-### 2. 启动服务端
+### 2. Start the Server
 
 ```bash
 cd server
-cp .env.example .env    # 编辑 .env，修改 JWT_SECRET
-npx tsx src/index.ts    # 默认启动在 :3001
+cp .env.example .env    # Edit .env, change JWT_SECRET
+npx tsx src/index.ts    # Starts on :3001
 ```
 
-首次运行会自动创建 `admin` 账户（密码 `admin123`）和 SQLite 数据库。
+First run creates an `admin` account (password `admin123`) and the SQLite database.
 
-### 3. 启动前端（选其一）
+### 3. Start the Frontend (pick one)
 
 ```bash
-# 网页版开发（Vite 热更新 :5173）
+# Web dev mode (Vite HMR on :5173)
 npm -w client run dev
 
-# 打包 Windows 桌面应用
+# Package Windows desktop app
 npm -w client run build
 npx electron-builder --win --x64 --dir
-# 输出在 release/win-unpacked/
+# Output in release/win-unpacked/
 ```
 
-### 4. 打开浏览器
+### 4. Open in Browser
 
 ```
-http://localhost:3001      # 网页版（Express 直接托管）
-http://localhost:5173      # 开发版（Vite + HMR）
+http://localhost:3001      # Web (Express serves frontend)
+http://localhost:5173      # Dev (Vite + HMR)
 ```
 
 ---
 
-## 📦 批量导入组件
+## 📦 Bulk Import Components
 
-PPTArts 提供 Python 导入脚本，支持从 npm 图标库 / SVG 资源站批量下载并导入：
+PPTArts includes a Python import script for downloading and importing icons/illustrations from npm packages and SVG repositories:
 
 ```bash
-# 1. 下载图标到本地目录（按分类组织）
-# 2. 运行导入脚本
+# 1. Download assets to the staging directory (organized by category)
+# 2. Run the import script
 python3 ppt-components-downloads/import_to_pptarts.py
 ```
 
-| 资源 | 数量 | 协议 |
+| Source | Count | License |
 |---|---|---|
-| 🎨 Manypixels 插画 | 1,226 | MIT |
-| 🏷️ Simple Icons 品牌 | 19 (可扩至 3,432) | CC0 |
+| 🎨 Manypixels Illustrations | 1,226 | MIT |
+| 🏷️ Simple Icons (brands) | 19 (expandable to 3,432) | CC0 |
 
-更多详见 [AI-IMPORT-GUIDE.md](docs/AI-IMPORT-GUIDE.md)。
-
----
-
-## 📂 分类体系
-
-```
-基础元素 (11 类)                     结构模板 (8 类)
-├── → 箭头                            ├── ↔ 并列结构
-├── 👤 人物角色                       ├── 🏛️ 架构图
-├── 💼 商务办公                       ├── ⚖️ 对比图
-├── 💻 科技数字                       ├── 🔀 流程图&时间轴
-├── 🌍 生活场景                       ├── 🔺 金字塔
-├── ✂️ 分割线&装饰                    ├── 🔄 循环
-├── ⏳ 过渡元素                       ├── 🧮 矩阵
-├── 📝 文字框                         └── 📊 信息图
-├── 💬 引用框
-├── 🏷️ 标签
-└── 📦 其他
-```
+See [AI-IMPORT-GUIDE.md](docs/AI-IMPORT-GUIDE.md) for the full API documentation.
 
 ---
 
-## 🔒 内网穿透部署
+## 📂 Category System
 
-想让团队同事在外网也能用？
+```
+Basic Elements (11 types)               Structure Templates (8 types)
+├── → Arrows                             ├── ↔ Side-by-Side
+├── 👤 Characters                        ├── 🏛️ Architecture
+├── 💼 Business                          ├── ⚖️ Comparison
+├── 💻 Tech & Digital                    ├── 🔀 Flowchart & Timeline
+├── 🌍 Lifestyle                         ├── 🔺 Pyramid
+├── ✂️ Dividers & Decorations            ├── 🔄 Cycle
+├── ⏳ Transitions                        ├── 🧮 Matrix
+├── 📝 Text Boxes                         └── 📊 Infographics
+├── 💬 Quote Boxes
+├── 🏷️ Labels
+└── 📦 Others
+```
+
+---
+
+## 🔒 Remote Deployment
+
+Want your team to access PPTArts from outside the office?
 
 ```bash
-# 1. 配置 .env
+# 1. Configure .env
 PUBLIC_MODE=true
-CORS_ORIGIN=https://你的域名.tail0771f7.ts.net
-JWT_SECRET=你的64位随机密钥
+CORS_ORIGIN=https://your-machine.tail0771f7.ts.net
+JWT_SECRET=your-64-char-random-secret
 
-# 2. 启动服务端
+# 2. Start the server
 cd server && npx tsx src/index.ts
 
-# 3. 开启 Tailscale Funnel
+# 3. Enable Tailscale Funnel
 tailscale funnel 3001
 ```
 
-然后浏览器打开 `https://你的机器.tail0771f7.ts.net` 就能用了。详见 [SECURITY-HARDENING.md](docs/SECURITY-HARDENING.md)。
+Then open `https://your-machine.tail0771f7.ts.net` in a browser. Done.
+
+See [SECURITY-HARDENING.md](docs/SECURITY-HARDENING.md) for the full security checklist.
 
 ---
 
-## 🧪 安全加固清单
+## 🧪 Security Checklist
 
-- [x] ~~JWT 默认密钥~~ → 随机 64 位强密钥
-- [x] ~~CORS 全开~~ → PUBLIC_MODE 白名单
-- [x] ~~无速率限制~~ → 登录 10次/15min，导入 60次/15min
-- [x] ~~Stack trace 泄露~~ → 500 只返回消息不返回堆栈
-- [x] ~~缩略图公开可枚举~~ → JWT 签名 URL（1h 过期）
-- [x] ~~文件扩展名可绕过~~ → 魔数校验（magic bytes）
-- [x] ~~无安全响应头~~ → Helmet (CSP + HSTS + X-Frame + XSS)
-- [x] ~~无审计日志~~ → Morgan 请求日志
+- [x] ~~Default JWT secret~~ → Random 64-char key enforced
+- [x] ~~Open CORS~~ → PUBLIC_MODE origin whitelist
+- [x] ~~No rate limiting~~ → Login 10/15min, Import 60/15min
+- [x] ~~Stack trace leaks~~ → 500 returns message only
+- [x] ~~Public thumbnails~~ → JWT-signed URLs (1h expiry)
+- [x] ~~Extension-only validation~~ → Magic byte verification
+- [x] ~~No security headers~~ → Helmet (CSP + HSTS + X-Frame + XSS)
+- [x] ~~No audit trail~~ → Morgan request logging
 
 ---
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 pptArts/
-├── client/                  # React + Electron 前端
+├── client/                  # React + Electron frontend
 │   ├── src/
-│   │   ├── api/            # Axios API 客户端
-│   │   ├── components/     # 通用组件（卡片/表格/导航）
-│   │   ├── pages/          # 页面（浏览/搜索/导入/管理）
-│   │   ├── stores/         # Zustand 状态管理
-│   │   └── types/          # TypeScript 类型
-│   ├── electron/           # Electron 主进程
-│   ├── index.html          # 入口 HTML + 响应式 CSS
-│   └── vite.config.ts      # Vite + 代理 + Electron 插件
-├── server/                  # Express 后端
+│   │   ├── api/            # Axios API client
+│   │   ├── components/     # Shared components (cards, table, nav)
+│   │   ├── pages/          # Pages (browse, search, import, manage)
+│   │   ├── stores/         # Zustand state management
+│   │   └── types/          # TypeScript types
+│   ├── electron/           # Electron main process
+│   ├── index.html          # Entry HTML + responsive CSS
+│   └── vite.config.ts      # Vite + proxy + Electron plugin
+├── server/                  # Express backend
 │   ├── src/
-│   │   ├── controllers/    # 路由处理
-│   │   ├── middleware/      # 认证/上传/错误处理
-│   │   ├── services/        # 业务逻辑
-│   │   ├── db/              # Schema + Seed
-│   │   └── types/           # TypeScript 类型
-│   └── data/                # SQLite 数据库
-├── docs/                    # 文档
+│   │   ├── controllers/    # Route handlers
+│   │   ├── middleware/      # Auth / upload / error handling
+│   │   ├── services/        # Business logic
+│   │   ├── db/              # Schema + seed
+│   │   └── types/           # TypeScript types
+│   └── data/                # SQLite database
+├── docs/                    # Documentation
 │   ├── PRD-V2.md
 │   ├── AI-IMPORT-GUIDE.md
 │   └── SECURITY-HARDENING.md
-└── ppt-components-downloads/ # 组件下载暂存区（gitignore）
-    └── import_to_pptarts.py  # 批量导入脚本
+└── ppt-components-downloads/ # Staging area (gitignored)
+    └── import_to_pptarts.py  # Bulk import script
 ```
 
 ---
